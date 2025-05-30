@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Callable, List
 
 from rdkit import Chem
@@ -16,7 +18,7 @@ class RdkitScoringFunction(ScoringFunctionBasedOnRdkitMol):
     Scoring function wrapping RDKit descriptors.
     """
 
-    def __init__(self, descriptor: Callable[[Chem.Mol], float], score_modifier: ScoreModifier = None) -> None:
+    def __init__(self, descriptor: Callable[[Chem.Mol], float], score_modifier: ScoreModifier  | None= None) -> None:
         """
         Args:
             descriptor: molecular descriptors, such as the ones in descriptors.py
@@ -34,7 +36,7 @@ class TanimotoScoringFunction(ScoringFunctionBasedOnRdkitMol):
     Scoring function that looks at the fingerprint similarity against a target molecule.
     """
 
-    def __init__(self, target, fp_type, score_modifier: ScoreModifier = None) -> None:
+    def __init__(self, target, fp_type, score_modifier: ScoreModifier  | None= None) -> None:
         """
         Args:
             target: target molecule

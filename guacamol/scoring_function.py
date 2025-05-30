@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from abc import abstractmethod
 import logging
 from typing import List, Optional
@@ -24,7 +26,7 @@ class ScoringFunction:
     In general, do not inherit directly from this class. Prefer `MoleculewiseScoringFunction` or `BatchScoringFunction`.
     """
 
-    def __init__(self, score_modifier: ScoreModifier = None) -> None:
+    def __init__(self, score_modifier: ScoreModifier | None = None) -> None:
         """
         Args:
             score_modifier: Modifier to apply to the score. If None, will be LinearModifier()
@@ -75,7 +77,7 @@ class MoleculewiseScoringFunction(ScoringFunction):
     Derived classes must only implement the `raw_score` function.
     """
 
-    def __init__(self, score_modifier: ScoreModifier = None) -> None:
+    def __init__(self, score_modifier: ScoreModifier | None= None) -> None:
         """
         Args:
             score_modifier: Modifier to apply to the score. If None, will be LinearModifier()
@@ -114,7 +116,7 @@ class BatchScoringFunction(ScoringFunction):
     Derived classes must only implement the `raw_score_list` function.
     """
 
-    def __init__(self, score_modifier: ScoreModifier = None) -> None:
+    def __init__(self, score_modifier: ScoreModifier | None = None) -> None:
         """
         Args:
             score_modifier: Modifier to apply to the score. If None, will be LinearModifier()
