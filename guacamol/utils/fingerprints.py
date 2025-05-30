@@ -3,9 +3,20 @@ from rdkit.Chem.AtomPairs.Sheridan import GetBPFingerprint, GetBTFingerprint
 from rdkit.Chem.Pharm2D import Generate, Gobbi_Pharm2D
 from typing import Literal
 from typing_extensions import TypeAlias
-from rdkit.DataStructs import IntSparseIntVect, SparseBitVect,LongSparseIntVect,ExplicitBitVect,UIntSparseIntVect
-FpT: TypeAlias = "IntSparseIntVect | SparseBitVect | LongSparseIntVect | ExplicitBitVect | UIntSparseIntVect"
+from rdkit.DataStructs import (
+    IntSparseIntVect,
+    SparseBitVect,
+    LongSparseIntVect,
+    ExplicitBitVect,
+    UIntSparseIntVect,
+)
+
+FpT: TypeAlias = (
+    "IntSparseIntVect | SparseBitVect | LongSparseIntVect | ExplicitBitVect | UIntSparseIntVect"
+)
 FpNameT = Literal["AP", "PHCO", "BPF", "BTF", "PATH", "ECFP4", "ECFP6", "FCFP4", "FCFP6"]
+
+
 class _FingerprintCalculator:
     """
     Calculate the fingerprint while avoiding a series of if-else.
@@ -15,10 +26,10 @@ class _FingerprintCalculator:
     """
 
     def get_fingerprint(self, mol: Mol, fp_type: FpNameT) -> FpT:
-        method_name = 'get_' + fp_type
+        method_name = "get_" + fp_type
         method = getattr(self, method_name)
         if method is None:
-            raise Exception(f'{fp_type} is not a supported fingerprint type.')
+            raise Exception(f"{fp_type} is not a supported fingerprint type.")
         return method(mol)
 
     def get_AP(self, mol: Mol) -> IntSparseIntVect:
@@ -49,5 +60,5 @@ class _FingerprintCalculator:
         return AllChem.GetMorganFingerprint(mol, 3, useFeatures=True)
 
 
-def get_fingerprint(mol: Mol, fp_type: FpNameT) -> FpT: 
+def get_fingerprint(mol: Mol, fp_type: FpNameT) -> FpT:
     return _FingerprintCalculator().get_fingerprint(mol=mol, fp_type=fp_type)

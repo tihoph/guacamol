@@ -23,11 +23,16 @@ class MockGenerator(GoalDirectedGenerator):
     """
     Mock generator that returns pre-defined molecules
     """
+
     def __init__(self, molecules: Sequence[str]) -> None:
         self.molecules = molecules
 
-    def generate_optimized_molecules(self, scoring_function: ScoringFunction, number_molecules: int,
-                                     starting_population: Sequence[str] | None = None) -> list[str]:
+    def generate_optimized_molecules(
+        self,
+        scoring_function: ScoringFunction,
+        number_molecules: int,
+        starting_population: Sequence[str] | None = None,
+    ) -> list[str]:
         assert number_molecules == len(self.molecules)
         return list(self.molecules)
 
@@ -37,8 +42,8 @@ def test_removes_duplicates() -> None:
     Assert that duplicated molecules (even with different SMILES strings) are considered only once.
     """
     top3 = uniform_specification(3)
-    benchmark = GoalDirectedBenchmark('benchmark', MockScoringFunction(), top3)
-    generator = MockGenerator(['OCC', 'CCO', 'C(O)C'])
+    benchmark = GoalDirectedBenchmark("benchmark", MockScoringFunction(), top3)
+    generator = MockGenerator(["OCC", "CCO", "C(O)C"])
 
     individual_mock_score = 0.3
 
@@ -47,8 +52,8 @@ def test_removes_duplicates() -> None:
 
 def test_removes_invalid_molecules() -> None:
     top3 = uniform_specification(3)
-    benchmark = GoalDirectedBenchmark('benchmark', MockScoringFunction(), top3)
-    generator = MockGenerator(['OCC', 'invalid', 'invalid2'])
+    benchmark = GoalDirectedBenchmark("benchmark", MockScoringFunction(), top3)
+    generator = MockGenerator(["OCC", "invalid", "invalid2"])
 
     individual_mock_score = 0.3
 
@@ -57,8 +62,8 @@ def test_removes_invalid_molecules() -> None:
 
 def test_correct_score_averaging() -> None:
     top3 = uniform_specification(3)
-    benchmark = GoalDirectedBenchmark('benchmark', MockScoringFunction(), top3)
-    generator = MockGenerator(['OCC', 'CCCCOCCCC', 'C'])
+    benchmark = GoalDirectedBenchmark("benchmark", MockScoringFunction(), top3)
+    generator = MockGenerator(["OCC", "CCCCOCCCC", "C"])
 
     expected_score = (0.3 + 0.9 + 0.1) / 3
 
@@ -70,8 +75,8 @@ def test_correct_score_with_multiple_contributions() -> None:
     Verify that 0.5 * (top1 + top3) delivers the correct result
     """
     specification = uniform_specification(1, 3)
-    benchmark = GoalDirectedBenchmark('benchmark', MockScoringFunction(), specification)
-    generator = MockGenerator(['OCC', 'CCCCOCCCC', 'C'])
+    benchmark = GoalDirectedBenchmark("benchmark", MockScoringFunction(), specification)
+    generator = MockGenerator(["OCC", "CCCCOCCCC", "C"])
 
     top3 = (0.3 + 0.9 + 0.1) / 3
     top1 = 0.9

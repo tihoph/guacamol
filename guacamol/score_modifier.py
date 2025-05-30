@@ -1,9 +1,10 @@
 from abc import abstractmethod
 from functools import partial
-from typing import TypeVar,Any
+from typing import TypeVar, Any
 from collections.abc import Sequence
 import numpy as np
 from numpy.typing import NDArray
+
 S = TypeVar("S", float, NDArray[np.floating[Any]])
 
 

@@ -5,14 +5,19 @@ from abc import ABCMeta, abstractmethod
 from guacamol.scoring_function import ScoringFunction
 from collections.abc import Sequence
 
+
 class GoalDirectedGenerator(metaclass=ABCMeta):
     """
     Interface for goal-directed molecule generators.
     """
 
     @abstractmethod
-    def generate_optimized_molecules(self, scoring_function: ScoringFunction, number_molecules: int,
-                                     starting_population: Sequence[str] | None = None) -> list[str]:
+    def generate_optimized_molecules(
+        self,
+        scoring_function: ScoringFunction,
+        number_molecules: int,
+        starting_population: Sequence[str] | None = None,
+    ) -> list[str]:
         """
         Given an objective function, generate molecules that score as high as possible.
 

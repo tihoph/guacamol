@@ -30,7 +30,7 @@ class ScoringFunction:
         Args:
             score_modifier: Modifier to apply to the score. If None, will be LinearModifier()
         """
-        self.score_modifier = score_modifier # type: ignore[assignment]
+        self.score_modifier = score_modifier  # type: ignore[assignment]
         self.corrupt_score = -1.0
 
     @property
@@ -76,7 +76,7 @@ class MoleculewiseScoringFunction(ScoringFunction):
     Derived classes must only implement the `raw_score` function.
     """
 
-    def __init__(self, score_modifier: ScoreModifier | None= None) -> None:
+    def __init__(self, score_modifier: ScoreModifier | None = None) -> None:
         """
         Args:
             score_modifier: Modifier to apply to the score. If None, will be LinearModifier()
@@ -89,7 +89,7 @@ class MoleculewiseScoringFunction(ScoringFunction):
         except InvalidMolecule:
             return self.corrupt_score
         except Exception:
-            logger.warning(f'Unknown exception thrown during scoring of {smiles}')
+            logger.warning(f"Unknown exception thrown during scoring of {smiles}")
             return self.corrupt_score
 
     def score_list(self, smiles_list: Sequence[str]) -> list[float]:
@@ -128,9 +128,10 @@ class BatchScoringFunction(ScoringFunction):
     def score_list(self, smiles_list: Sequence[str]) -> list[float]:
         raw_scores = self.raw_score_list(smiles_list)
 
-        scores = [self.corrupt_score if raw_score is None
-                  else self.modify_score(raw_score)
-                  for raw_score in raw_scores]
+        scores = [
+            self.corrupt_score if raw_score is None else self.modify_score(raw_score)
+            for raw_score in raw_scores
+        ]
 
         return scores
 
@@ -180,7 +181,11 @@ class ArithmeticMeanScoringFunction(BatchScoringFunction):
     Scoring function that combines multiple scoring functions linearly.
     """
 
-    def __init__(self, scoring_functions: Sequence[ScoringFunction], weights: Sequence[float] | None=None) -> None:
+    def __init__(
+        self,
+        scoring_functions: Sequence[ScoringFunction],
+        weights: Sequence[float] | None = None,
+    ) -> None:
         """
         Args:
             scoring_functions: scoring functions to combine

@@ -3,13 +3,21 @@ from functools import partial
 import numpy as np
 import pytest
 
-from guacamol.score_modifier import LinearModifier, SquaredModifier, AbsoluteScoreModifier, GaussianModifier, \
-    MinGaussianModifier, MaxGaussianModifier, ThresholdedLinearModifier, ClippedScoreModifier, \
-    SmoothClippedScoreModifier, ChainedModifier
+from guacamol.score_modifier import (
+    LinearModifier,
+    SquaredModifier,
+    AbsoluteScoreModifier,
+    GaussianModifier,
+    MinGaussianModifier,
+    MaxGaussianModifier,
+    ThresholdedLinearModifier,
+    ClippedScoreModifier,
+    SmoothClippedScoreModifier,
+    ChainedModifier,
+)
 
 scalar_value = 8.343
-value_array = np.array([[-3.3, 0, 5.5],
-                        [0.011, 2.0, -33]])
+value_array = np.array([[-3.3, 0, 5.5], [0.011, 2.0, -33]])
 
 
 def test_linear_function_default() -> None:
@@ -51,7 +59,7 @@ def test_absolute_function() -> None:
 
 
 def gaussian(x, mu: float, sig: float):
-    return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
+    return np.exp(-np.power(x - mu, 2.0) / (2 * np.power(sig, 2.0)))
 
 
 def test_gaussian_function() -> None:
@@ -128,7 +136,9 @@ def test_clipped_function() -> None:
     min_score = -3.3
     max_score = 9.2
 
-    modifier = ClippedScoreModifier(upper_x=max_x, lower_x=min_x, high_score=max_score, low_score=min_score)
+    modifier = ClippedScoreModifier(
+        upper_x=max_x, lower_x=min_x, high_score=max_score, low_score=min_score
+    )
 
     # values smaller than min_x should be assigned min_score
     for x in [-2, 0, 4, 4.4]:
@@ -153,7 +163,9 @@ def test_clipped_function_inverted() -> None:
     min_score = -3.3
     max_score = 9.2
 
-    modifier = ClippedScoreModifier(upper_x=max_x, lower_x=min_x, high_score=max_score, low_score=min_score)
+    modifier = ClippedScoreModifier(
+        upper_x=max_x, lower_x=min_x, high_score=max_score, low_score=min_score
+    )
 
     # values smaller than max_x should be assigned the maximal score
     for x in [-2, 0, 4, 4.4]:
@@ -187,7 +199,9 @@ def test_smooth_clipped() -> None:
     min_score = -3.3
     max_score = 9.2
 
-    modifier = SmoothClippedScoreModifier(upper_x=max_x, lower_x=min_x, high_score=max_score, low_score=min_score)
+    modifier = SmoothClippedScoreModifier(
+        upper_x=max_x, lower_x=min_x, high_score=max_score, low_score=min_score
+    )
 
     # assert that the slope in the middle is correct
 
@@ -214,7 +228,9 @@ def test_smooth_clipped_inverted() -> None:
     min_score = -3.3
     max_score = 9.2
 
-    modifier = SmoothClippedScoreModifier(upper_x=max_x, lower_x=min_x, high_score=max_score, low_score=min_score)
+    modifier = SmoothClippedScoreModifier(
+        upper_x=max_x, lower_x=min_x, high_score=max_score, low_score=min_score
+    )
 
     # assert that the slope in the middle is correct
 

@@ -1,5 +1,6 @@
 from collections.abc import Sequence
 
+
 class ScoreContributionSpecification:
     """
     Specifies how to calculate the score of a goal-directed benchmark.
@@ -35,8 +36,9 @@ def uniform_specification(*top_counts: int) -> ScoreContributionSpecification:
     return ScoreContributionSpecification(contributions=contributions)
 
 
-def compute_global_score(contribution_specification: ScoreContributionSpecification,
-                         scores: Sequence[float]) -> tuple[float, dict[str, float]]:
+def compute_global_score(
+    contribution_specification: ScoreContributionSpecification, scores: Sequence[float]
+) -> tuple[float, dict[str, float]]:
     """
     Computes the global score according to the contribution specification.
 
@@ -54,7 +56,7 @@ def compute_global_score(contribution_specification: ScoreContributionSpecificat
 
     for top_count, weight in contribution_specification.contributions:
         score = sum(sorted_scores[:top_count]) / top_count
-        top_x_dict[f'top_{top_count}'] = score
+        top_x_dict[f"top_{top_count}"] = score
         global_score += score * weight
 
     global_score /= sum(contribution_specification.weights)

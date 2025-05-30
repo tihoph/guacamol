@@ -10,6 +10,7 @@ import numpy as np
 from tqdm import tqdm
 from collections.abc import Sequence
 
+
 def remove_duplicates(list_with_duplicates: Sequence[str]) -> list[str]:
     """
     Removes the duplicates and keeps the ordering of the original list.
@@ -32,7 +33,9 @@ def remove_duplicates(list_with_duplicates: Sequence[str]) -> list[str]:
     return unique_list
 
 
-def get_random_subset(dataset: Sequence[str], subset_size: int, seed: int | None = None) -> list[str]:
+def get_random_subset(
+    dataset: Sequence[str], subset_size: int, seed: int | None = None
+) -> list[str]:
     """
     Get a random subset of some dataset.
 
@@ -48,8 +51,9 @@ def get_random_subset(dataset: Sequence[str], subset_size: int, seed: int | None
         subset of the original dataset as a list
     """
     if len(dataset) < subset_size:
-        raise Exception(f'The dataset to extract a subset from is too small: '
-                        f'{len(dataset)} < {subset_size}')
+        raise Exception(
+            f"The dataset to extract a subset from is too small: {len(dataset)} < {subset_size}"
+        )
 
     # save random number generator state
     rng_state = np.random.get_state()
@@ -75,10 +79,10 @@ def download_if_not_present(filename: str, uri: str) -> None:
         print("{} already downloaded, reusing.".format(filename))
     else:
         with open(filename, "wb") as fd:
-            print('Starting {} download from {}...'.format(filename, uri))
-            with ProgressBarUpTo(unit='B', unit_scale=True, unit_divisor=1024, miniters=1) as t:
+            print("Starting {} download from {}...".format(filename, uri))
+            with ProgressBarUpTo(unit="B", unit_scale=True, unit_divisor=1024, miniters=1) as t:
                 urlretrieve(uri, fd.name, reporthook=t.update_to)
-            print('Finished {} download.'.format(filename))
+            print("Finished {} download.".format(filename))
 
 
 class ProgressBar(tqdm):
@@ -87,12 +91,11 @@ class ProgressBar(tqdm):
     """
 
     def __init__(self, *args, **kwargs) -> None:
-        """Overwrite TQDM and detect if output is a file or not.
-        """
+        """Overwrite TQDM and detect if output is a file or not."""
         # See if output is a terminal, set to updates every 30 seconds
         if not sys.stdout.isatty():
-            kwargs['mininterval'] = 30.0
-            kwargs['maxinterval'] = 30.0
+            kwargs["mininterval"] = 30.0
+            kwargs["maxinterval"] = 30.0
         super().__init__(*args, **kwargs)
 
 
@@ -101,9 +104,9 @@ class ProgressBarUpTo(ProgressBar):
     Fancy Progress Bar that accepts a position not a delta.
     """
 
-    def update_to(self, b: int=1, bsize: int=1, tsize=None) -> None:
+    def update_to(self, b: int = 1, bsize: int = 1, tsize=None) -> None:
         """
-            Update to a specified position.
+        Update to a specified position.
         """
         if tsize is not None:
             self.total = tsize
@@ -112,4 +115,10 @@ class ProgressBarUpTo(ProgressBar):
 
 def get_time_string() -> str:
     lt = time.localtime()
-    return "%04d%02d%02d-%02d%02d" % (lt.tm_year, lt.tm_mon, lt.tm_mday, lt.tm_hour, lt.tm_min)
+    return "%04d%02d%02d-%02d%02d" % (
+        lt.tm_year,
+        lt.tm_mon,
+        lt.tm_mday,
+        lt.tm_hour,
+        lt.tm_min,
+    )
