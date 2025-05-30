@@ -1,16 +1,16 @@
 import datetime
 import json
 import logging
-from typing import Any
-from typing import Literal
 from collections.abc import Sequence
+from typing import Any, Literal
+
 import guacamol
+from guacamol.benchmark_suites import distribution_learning_benchmark_suite
 from guacamol.distribution_learning_benchmark import (
     DistributionLearningBenchmark,
     DistributionLearningBenchmarkResult,
 )
 from guacamol.distribution_matching_generator import DistributionMatchingGenerator
-from guacamol.benchmark_suites import distribution_learning_benchmark_suite
 from guacamol.utils.data import get_time_string
 
 logger = logging.getLogger(__name__)
@@ -96,7 +96,7 @@ def _evaluate_distribution_learning_benchmarks(
         logger.info(f'Results for the benchmark "{result.benchmark_name}":')
         logger.info(f"  Score: {result.score:.6f}")
         logger.info(
-            f"  Sampling time: {str(datetime.timedelta(seconds=int(result.sampling_time)))}"
+            f"  Sampling time: {datetime.timedelta(seconds=int(result.sampling_time))!s}",
         )
         logger.info(f"  Metadata: {result.metadata}")
         results.append(result)

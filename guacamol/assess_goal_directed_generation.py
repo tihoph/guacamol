@@ -5,12 +5,12 @@ from collections.abc import Sequence
 from typing import Any, Literal
 
 import guacamol
+from guacamol.benchmark_suites import goal_directed_benchmark_suite
 from guacamol.goal_directed_benchmark import (
     GoalDirectedBenchmark,
     GoalDirectedBenchmarkResult,
 )
 from guacamol.goal_directed_generator import GoalDirectedGenerator
-from guacamol.benchmark_suites import goal_directed_benchmark_suite
 from guacamol.utils.data import get_time_string
 
 logger = logging.getLogger(__name__)
@@ -72,7 +72,7 @@ def _evaluate_goal_directed_benchmarks(
         logger.info(f'Results for the benchmark "{result.benchmark_name}":')
         logger.info(f"  Score: {result.score:.6f}")
         logger.info(
-            f"  Execution time: {str(datetime.timedelta(seconds=int(result.execution_time)))}"
+            f"  Execution time: {datetime.timedelta(seconds=int(result.execution_time))!s}",
         )
         logger.info(f"  Metadata: {result.metadata}")
         results.append(result)

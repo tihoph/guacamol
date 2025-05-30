@@ -1,6 +1,6 @@
 from rdkit import Chem
 
-from guacamol.utils.descriptors import num_atoms, AtomCounter
+from guacamol.utils.descriptors import AtomCounter, num_atoms
 
 
 def test_num_atoms() -> None:

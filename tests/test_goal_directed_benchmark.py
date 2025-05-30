@@ -1,13 +1,18 @@
 from __future__ import annotations
 
-from collections.abc import Sequence
+from typing import TYPE_CHECKING
+
 import pytest
-from rdkit import Chem
 
 from guacamol.goal_directed_benchmark import GoalDirectedBenchmark
 from guacamol.goal_directed_generator import GoalDirectedGenerator
 from guacamol.goal_directed_score_contributions import uniform_specification
-from guacamol.scoring_function import ScoringFunctionBasedOnRdkitMol, ScoringFunction
+from guacamol.scoring_function import ScoringFunction, ScoringFunctionBasedOnRdkitMol
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from rdkit import Chem
 
 
 class MockScoringFunction(ScoringFunctionBasedOnRdkitMol):

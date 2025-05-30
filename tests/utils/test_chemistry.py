@@ -1,9 +1,9 @@
 from guacamol.utils.chemistry import (
+    calculate_internal_pairwise_similarities,
+    calculate_pairwise_similarities,
     canonicalize,
     canonicalize_list,
     is_valid,
-    calculate_internal_pairwise_similarities,
-    calculate_pairwise_similarities,
     parse_molecular_formula,
 )
 

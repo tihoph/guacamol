@@ -1,39 +1,40 @@
 from typing import Literal
+
 from guacamol.distribution_learning_benchmark import (
     DistributionLearningBenchmark,
-    ValidityBenchmark,
     UniquenessBenchmark,
+    ValidityBenchmark,
 )
 from guacamol.goal_directed_benchmark import GoalDirectedBenchmark
 from guacamol.scoring_function import ArithmeticMeanScoringFunction
 from guacamol.standard_benchmarks import (
-    hard_cobimetinib,
-    similarity,
-    logP_benchmark,
+    amlodipine_rings,
     cns_mpo,
-    qed_benchmark,
-    median_camphor_menthol,
-    novelty_benchmark,
-    isomers_c11h24,
+    decoration_hop,
+    frechet_benchmark,
+    hard_cobimetinib,
+    hard_fexofenadine,
+    hard_osimertinib,
     isomers_c7h8n2o2,
     isomers_c9h10n2o2pf2cl,
-    frechet_benchmark,
-    tpsa_benchmark,
-    hard_osimertinib,
-    hard_fexofenadine,
-    weird_physchem,
-    start_pop_ranolazine,
+    isomers_c11h24,
     kldiv_benchmark,
-    perindopril_rings,
-    amlodipine_rings,
-    sitagliptin_replacement,
-    zaleplon_with_other_formula,
-    valsartan_smarts,
+    logP_benchmark,
+    median_camphor_menthol,
     median_tadalafil_sildenafil,
-    decoration_hop,
-    scaffold_hop,
-    ranolazine_mpo,
+    novelty_benchmark,
+    perindopril_rings,
     pioglitazone_mpo,
+    qed_benchmark,
+    ranolazine_mpo,
+    scaffold_hop,
+    similarity,
+    sitagliptin_replacement,
+    start_pop_ranolazine,
+    tpsa_benchmark,
+    valsartan_smarts,
+    weird_physchem,
+    zaleplon_with_other_formula,
 )
 
 
@@ -51,7 +52,9 @@ def goal_directed_benchmark_suite(
 
 
 def distribution_learning_benchmark_suite(
-    chembl_file_path: str, version_name: Literal["v1", "v2"], number_samples: int
+    chembl_file_path: str,
+    version_name: Literal["v1", "v2"],
+    number_samples: int,
 ) -> list[DistributionLearningBenchmark]:
     """
     Returns a suite of benchmarks for a specified benchmark version
@@ -65,9 +68,10 @@ def distribution_learning_benchmark_suite(
     """
 
     # For distribution-learning, v1 and v2 are identical
-    if version_name == "v1" or version_name == "v2":
+    if version_name in {"v1", "v2"}:
         return distribution_learning_suite_v1(
-            chembl_file_path=chembl_file_path, number_samples=number_samples
+            chembl_file_path=chembl_file_path,
+            number_samples=number_samples,
         )
 
     raise Exception(f'Distribution-learning benchmark suite "{version_name}" does not exist.')
@@ -216,7 +220,8 @@ def goal_directed_suite_trivial() -> list[GoalDirectedBenchmark]:
 
 
 def distribution_learning_suite_v1(
-    chembl_file_path: str, number_samples: int = 10000
+    chembl_file_path: str,
+    number_samples: int = 10000,
 ) -> list[DistributionLearningBenchmark]:
     """
     Suite of distribution learning benchmarks, v1.

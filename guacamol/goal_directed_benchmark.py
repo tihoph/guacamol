@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Any
-from collections.abc import Mapping, Sequence
+from typing import TYPE_CHECKING, Any
+
 import numpy as np
 
 from guacamol.goal_directed_score_contributions import (
@@ -11,12 +11,16 @@ from guacamol.goal_directed_score_contributions import (
     compute_global_score,
 )
 from guacamol.scoring_function import ScoringFunction, ScoringFunctionWrapper
-from guacamol.goal_directed_generator import GoalDirectedGenerator
 from guacamol.utils.chemistry import (
+    calculate_internal_pairwise_similarities,
     canonicalize_list,
     remove_duplicates,
-    calculate_internal_pairwise_similarities,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping, Sequence
+
+    from guacamol.goal_directed_generator import GoalDirectedGenerator
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -103,7 +107,7 @@ class GoalDirectedBenchmark:
             logger.warning(
                 f"An incorrect number of distinct molecules was generated: "
                 f"{len(unique_molecules)} instead of {number_molecules_to_generate}. "
-                f"Padding scores with {number_missing} zeros..."
+                f"Padding scores with {number_missing} zeros...",
             )
             scores.extend([0.0] * number_missing)
 
@@ -116,7 +120,10 @@ class GoalDirectedBenchmark:
 
         # accumulate internal_similarities in metadata
         int_simi_histogram = np.histogram(
-            internal_similarities, bins=10, range=(0, 1), density=True
+            internal_similarities,
+            bins=10,
+            range=(0, 1),
+            density=True,
         )
 
         metadata: dict[str, Any] = {}

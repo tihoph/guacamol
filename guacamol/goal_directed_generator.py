@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from abc import ABCMeta, abstractmethod
+from typing import TYPE_CHECKING
 
-from guacamol.scoring_function import ScoringFunction
-from collections.abc import Sequence
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from guacamol.scoring_function import ScoringFunction
 
 
 class GoalDirectedGenerator(metaclass=ABCMeta):

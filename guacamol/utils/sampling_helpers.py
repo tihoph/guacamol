@@ -1,9 +1,11 @@
 from guacamol.distribution_matching_generator import DistributionMatchingGenerator
-from guacamol.utils.chemistry import is_valid, canonicalize
+from guacamol.utils.chemistry import canonicalize, is_valid
 
 
 def sample_valid_molecules(
-    model: DistributionMatchingGenerator, number_molecules: int, max_tries: int = 10
+    model: DistributionMatchingGenerator,
+    number_molecules: int,
+    max_tries: int = 10,
 ) -> list[str]:
     """
     Sample from the given generator until the desired number of valid molecules
@@ -35,7 +37,9 @@ def sample_valid_molecules(
 
 
 def sample_unique_molecules(
-    model: DistributionMatchingGenerator, number_molecules: int, max_tries: int = 10
+    model: DistributionMatchingGenerator,
+    number_molecules: int,
+    max_tries: int = 10,
 ) -> list[str]:
     """
     Sample from the given generator until the desired number of unique (distinct) molecules

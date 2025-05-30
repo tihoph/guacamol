@@ -1,7 +1,8 @@
 from guacamol.utils.sampling_helpers import (
-    sample_valid_molecules,
     sample_unique_molecules,
+    sample_valid_molecules,
 )
+
 from .mock_generator import MockGenerator
 
 

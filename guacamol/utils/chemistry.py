@@ -1,20 +1,23 @@
 from __future__ import annotations
 
-from typing import Sized
 import logging
 import re
+from typing import TYPE_CHECKING
 
 import numpy as np
-from rdkit import Chem
-from rdkit import RDLogger, DataStructs
+from numpy import histogram
+from rdkit import Chem, DataStructs, RDLogger
 from rdkit.Chem import AllChem
 from rdkit.ML.Descriptors import MoleculeDescriptors
-from numpy import histogram
 from scipy.stats import entropy, gaussian_kde
-from numpy.typing import NDArray
-from rdkit.DataStructs import ExplicitBitVect
+
 from guacamol.utils.data import remove_duplicates
-from collections.abc import Sequence, Iterable, Collection, Generator
+
+if TYPE_CHECKING:
+    from collections.abc import Collection, Generator, Iterable, Sequence
+
+    from numpy.typing import NDArray
+    from rdkit.DataStructs import ExplicitBitVect
 
 # Mute RDKit logger
 RDLogger.logger().setLevel(RDLogger.CRITICAL)
@@ -57,8 +60,7 @@ def canonicalize(smiles: str, include_stereocenters: bool = True) -> str | None:
 
     if mol is not None:
         return Chem.MolToSmiles(mol, isomericSmiles=include_stereocenters)
-    else:
-        return None
+    return None
 
 
 def canonicalize_list(smiles_list: Iterable[str], include_stereocenters: bool = True) -> list[str]:
@@ -114,8 +116,7 @@ def split_charged_mol(smiles: str) -> str:
                 largest_len = len(i)
         return largest
 
-    else:
-        return smiles
+    return smiles
 
 
 def initialise_neutralisation_reactions() -> list[tuple[Chem.Mol, Chem.Mol]]:
@@ -143,7 +144,8 @@ def initialise_neutralisation_reactions() -> list[tuple[Chem.Mol, Chem.Mol]]:
 
 
 def neutralise_charges(
-    mol: Chem.Mol, reactions: Sequence[tuple[Chem.Mol, Chem.Mol]] | None = None
+    mol: Chem.Mol,
+    reactions: Sequence[tuple[Chem.Mol, Chem.Mol]] | None = None,
 ) -> tuple[Chem.Mol, bool]:
     if reactions is None:
         reactions = initialise_neutralisation_reactions()
@@ -158,8 +160,7 @@ def neutralise_charges(
     if replaced:
         Chem.SanitizeMol(mol)
         return mol, True
-    else:
-        return mol, False
+    return mol, False
 
 
 def filter_and_canonicalize(
@@ -218,9 +219,8 @@ def filter_and_canonicalize(
         max_tanimoto = highest_tanimoto_precalc_fps(mol, holdout_fps)
         if max_tanimoto < tanimoto_cutoff and canon_smi not in holdout_set:
             return [canon_smi]
-        else:
-            print("Exclude: {} {}".format(canon_smi, max_tanimoto))
-    except Exception as e:
+        print("Exclude: {} {}".format(canon_smi, max_tanimoto))
+    except Exception as e:  # noqa: BLE001
         print(e)
     return []
 
@@ -236,7 +236,7 @@ def calculate_internal_pairwise_similarities(
     """
     if len(smiles_list) > 10000:
         logger.warning(
-            f"Calculating internal similarity on large set of SMILES strings ({len(smiles_list)})"
+            f"Calculating internal similarity on large set of SMILES strings ({len(smiles_list)})",
         )
 
     mols = get_mols(smiles_list)
@@ -254,7 +254,8 @@ def calculate_internal_pairwise_similarities(
 
 
 def calculate_pairwise_similarities(
-    smiles_list1: Sequence[str], smiles_list2: Sequence[str]
+    smiles_list1: Sequence[str],
+    smiles_list2: Sequence[str],
 ) -> np.ndarray:
     """
     Computes the pairwise ECFP4 tanimoto similarity of the two smiles containers.
@@ -265,7 +266,7 @@ def calculate_pairwise_similarities(
     if len(smiles_list1) > 10000 or len(smiles_list2) > 10000:
         logger.warning(
             f"Calculating similarity between large sets of "
-            f"SMILES strings ({len(smiles_list1)} x {len(smiles_list2)})"
+            f"SMILES strings ({len(smiles_list1)} x {len(smiles_list2)})",
         )
 
     mols1 = get_mols(smiles_list1)
@@ -284,7 +285,7 @@ def calculate_pairwise_similarities(
     return np.array(similarities)
 
 
-def get_fingerprints_from_smileslist(smiles_list: set[str]):
+def get_fingerprints_from_smileslist(smiles_list: Sequence[str]) -> list[ExplicitBitVect]:
     """
     Converts the provided smiles into ECFP4 bitvectors of length 4096.
 
@@ -298,7 +299,9 @@ def get_fingerprints_from_smileslist(smiles_list: set[str]):
 
 
 def get_fingerprints(
-    mols: Iterable[Chem.Mol], radius: int = 2, length: int = 4096
+    mols: Iterable[Chem.Mol],
+    radius: int = 2,
+    length: int = 4096,
 ) -> list[ExplicitBitVect]:
     """
     Converts molecules to ECFP bitvectors.
@@ -319,7 +322,7 @@ def get_mols(smiles_list: Iterable[str]) -> Generator[Chem.Mol]:
             mol = Chem.MolFromSmiles(i)
             if mol is not None:
                 yield mol
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001, PERF203
             logger.warning(e)
 
 
@@ -367,7 +370,8 @@ def discrete_kldiv(X_baseline: NDArray[np.float64], X_sampled: NDArray[np.float6
 
 
 def calculate_pc_descriptors(
-    smiles: Iterable[str], pc_descriptors: Sequence[str]
+    smiles: Iterable[str],
+    pc_descriptors: Sequence[str],
 ) -> NDArray[np.float64]:
     output: list[NDArray[np.float64]] = []
 
@@ -380,7 +384,8 @@ def calculate_pc_descriptors(
 
 
 def _calculate_pc_descriptors(
-    smiles: str, pc_descriptors: Sequence[str]
+    smiles: str,
+    pc_descriptors: Sequence[str],
 ) -> NDArray[np.float64] | None:
     calc = MoleculeDescriptors.MolecularDescriptorCalculator(pc_descriptors)
 

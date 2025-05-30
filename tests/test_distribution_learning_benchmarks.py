@@ -1,14 +1,17 @@
-from guacamol.distribution_learning_benchmark import (
-    ValidityBenchmark,
-    UniquenessBenchmark,
-    NoveltyBenchmark,
-    KLDivBenchmark,
-)
-from guacamol.assess_distribution_learning import _assess_distribution_learning
-from .mock_generator import MockGenerator
-import numpy as np
 import tempfile
 from os.path import join
+
+import numpy as np
+
+from guacamol.assess_distribution_learning import _assess_distribution_learning
+from guacamol.distribution_learning_benchmark import (
+    KLDivBenchmark,
+    NoveltyBenchmark,
+    UniquenessBenchmark,
+    ValidityBenchmark,
+)
+
+from .mock_generator import MockGenerator
 
 
 def test_validity_does_not_penalize_duplicates() -> None:
@@ -91,7 +94,8 @@ def test_KLdiv_benchmark_same_dist() -> None:
 def test_KLdiv_benchmark_different_dist() -> None:
     generator = MockGenerator(["CCOCC", "NNNNONNN", "C=CC=C"])
     benchmark = KLDivBenchmark(
-        number_samples=3, training_set=["FCCOCC", "CC(CC)CCCCNONNN", "C=CC=O"]
+        number_samples=3,
+        training_set=["FCCOCC", "CC(CC)CCCCNONNN", "C=CC=O"],
     )
     result = benchmark.assess_model(generator)
     print(result.metadata)
@@ -122,7 +126,7 @@ def test_distribution_learning_suite_v1() -> None:
             "NNNNONNN",
             "C=CC=C",
         ]
-        * 10
+        * 10,
     )
 
     mock_chembl = [

@@ -1,5 +1,6 @@
-from math import sqrt
 from collections.abc import Sequence
+from math import sqrt
+
 import pytest
 
 from guacamol.common_scoring_functions import (
@@ -8,8 +9,8 @@ from guacamol.common_scoring_functions import (
 )
 from guacamol.score_modifier import GaussianModifier
 from guacamol.scoring_function import (
-    BatchScoringFunction,
     ArithmeticMeanScoringFunction,
+    BatchScoringFunction,
     GeometricMeanScoringFunction,
 )
 from guacamol.utils.math import geometric_mean
@@ -139,7 +140,8 @@ def test_arithmetic_mean_scoring_function() -> None:
     mock_2 = MockScoringFunction(mock_values_2)
 
     scoring_function = ArithmeticMeanScoringFunction(
-        scoring_functions=[mock_1, mock_2], weights=[weight_1, weight_2]
+        scoring_functions=[mock_1, mock_2],
+        weights=[weight_1, weight_2],
     )
 
     smiles = ["CC"] * 5

@@ -3,12 +3,14 @@ import os
 import pkgutil
 import tempfile
 import time
+from collections.abc import Sequence
+from typing import Any
 
 import fcd
 import numpy as np
+import torch
 from numpy.typing import NDArray
-from typing import Any
-from collections.abc import Sequence
+
 from guacamol.distribution_learning_benchmark import (
     DistributionLearningBenchmark,
     DistributionLearningBenchmarkResult,
@@ -16,7 +18,6 @@ from guacamol.distribution_learning_benchmark import (
 from guacamol.distribution_matching_generator import DistributionMatchingGenerator
 from guacamol.utils.data import get_random_subset
 from guacamol.utils.sampling_helpers import sample_valid_molecules
-import torch
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -49,13 +50,15 @@ class FrechetBenchmark(DistributionLearningBenchmark):
         self.reference_molecules = get_random_subset(training_set, self.sample_size, seed=42)
 
     def assess_model(
-        self, model: DistributionMatchingGenerator
+        self,
+        model: DistributionMatchingGenerator,
     ) -> DistributionLearningBenchmarkResult:
         chemnet = self._load_chemnet()
 
         start_time = time.time()
         generated_molecules = sample_valid_molecules(
-            model=model, number_molecules=self.number_samples
+            model=model,
+            number_molecules=self.number_samples,
         )
         end_time = time.time()
 
@@ -105,7 +108,9 @@ class FrechetBenchmark(DistributionLearningBenchmark):
         return fcd.load_ref_model(model_path)
 
     def _calculate_distribution_statistics(
-        self, model: torch.nn.Module, molecules: Sequence[str]
+        self,
+        model: torch.nn.Module,
+        molecules: Sequence[str],
     ) -> tuple[NDArray[np.floating[Any]], NDArray[np.floating[Any]]]:
         sample_std = fcd.canonical_smiles(molecules)
         gen_mol_act = fcd.get_predictions(model, sample_std)

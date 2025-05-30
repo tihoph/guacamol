@@ -1,15 +1,16 @@
+from typing import Literal
+
 from rdkit.Chem import AllChem, Mol
 from rdkit.Chem.AtomPairs.Sheridan import GetBPFingerprint, GetBTFingerprint
 from rdkit.Chem.Pharm2D import Generate, Gobbi_Pharm2D
-from typing import Literal
-from typing_extensions import TypeAlias
 from rdkit.DataStructs import (
-    IntSparseIntVect,
-    SparseBitVect,
-    LongSparseIntVect,
     ExplicitBitVect,
+    IntSparseIntVect,
+    LongSparseIntVect,
+    SparseBitVect,
     UIntSparseIntVect,
 )
+from typing_extensions import TypeAlias
 
 FpT: TypeAlias = (
     "IntSparseIntVect | SparseBitVect | LongSparseIntVect | ExplicitBitVect | UIntSparseIntVect"

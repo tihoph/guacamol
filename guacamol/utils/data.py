@@ -3,12 +3,14 @@ from __future__ import annotations
 import os
 import sys
 import time
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from urllib.request import urlretrieve
 
 import numpy as np
 from tqdm import tqdm
-from collections.abc import Sequence
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
 
 
 def remove_duplicates(list_with_duplicates: Sequence[str]) -> list[str]:
@@ -34,7 +36,9 @@ def remove_duplicates(list_with_duplicates: Sequence[str]) -> list[str]:
 
 
 def get_random_subset(
-    dataset: Sequence[str], subset_size: int, seed: int | None = None
+    dataset: Sequence[str],
+    subset_size: int,
+    seed: int | None = None,
 ) -> list[str]:
     """
     Get a random subset of some dataset.
@@ -52,7 +56,7 @@ def get_random_subset(
     """
     if len(dataset) < subset_size:
         raise Exception(
-            f"The dataset to extract a subset from is too small: {len(dataset)} < {subset_size}"
+            f"The dataset to extract a subset from is too small: {len(dataset)} < {subset_size}",
         )
 
     # save random number generator state
@@ -81,7 +85,7 @@ def download_if_not_present(filename: str, uri: str) -> None:
         with open(filename, "wb") as fd:
             print("Starting {} download from {}...".format(filename, uri))
             with ProgressBarUpTo(unit="B", unit_scale=True, unit_divisor=1024, miniters=1) as t:
-                urlretrieve(uri, fd.name, reporthook=t.update_to)
+                urlretrieve(uri, fd.name, reporthook=t.update_to)  # noqa: S310
             print("Finished {} download.".format(filename))
 
 
@@ -90,7 +94,7 @@ class ProgressBar(tqdm):
     Create a version of TQDM that notices whether it is going to the output or a file.
     """
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         """Overwrite TQDM and detect if output is a file or not."""
         # See if output is a terminal, set to updates every 30 seconds
         if not sys.stdout.isatty():
@@ -104,7 +108,7 @@ class ProgressBarUpTo(ProgressBar):
     Fancy Progress Bar that accepts a position not a delta.
     """
 
-    def update_to(self, b: int = 1, bsize: int = 1, tsize=None) -> None:
+    def update_to(self, b: int = 1, bsize: int = 1, tsize: int | None = None) -> None:
         """
         Update to a specified position.
         """

@@ -16,7 +16,7 @@ def test_subset() -> None:
 def test_subset_if_dataset_too_small() -> None:
     dataset = list(np.random.rand(100))
 
-    with pytest.raises(Exception):
+    with pytest.raises(Exception):  # noqa: PT011, B017
         get_random_subset(dataset, 1000)
 
 

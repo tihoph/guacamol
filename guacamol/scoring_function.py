@@ -1,20 +1,25 @@
 from __future__ import annotations
 
-from abc import abstractmethod
 import logging
+from abc import abstractmethod
+from typing import TYPE_CHECKING
 
 import numpy as np
-from rdkit import Chem
-from collections.abc import Sequence
+
+from guacamol.score_modifier import LinearModifier, ScoreModifier
 from guacamol.utils.chemistry import smiles_to_rdkit_mol
-from guacamol.score_modifier import ScoreModifier, LinearModifier
 from guacamol.utils.math import geometric_mean
+
+if TYPE_CHECKING:
+    from collections.abc import Sequence
+
+    from rdkit import Chem
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
 
-class InvalidMolecule(Exception):
+class InvalidMolecule(Exception):  # noqa: N818
     pass
 
 
@@ -88,7 +93,7 @@ class MoleculewiseScoringFunction(ScoringFunction):
             return self.modify_score(self.raw_score(smiles))
         except InvalidMolecule:
             return self.corrupt_score
-        except Exception:
+        except Exception:  # noqa: BLE001
             logger.warning(f"Unknown exception thrown during scoring of {smiles}")
             return self.corrupt_score
 
@@ -128,12 +133,10 @@ class BatchScoringFunction(ScoringFunction):
     def score_list(self, smiles_list: Sequence[str]) -> list[float]:
         raw_scores = self.raw_score_list(smiles_list)
 
-        scores = [
+        return [
             self.corrupt_score if raw_score is None else self.modify_score(raw_score)
             for raw_score in raw_scores
         ]
-
-        return scores
 
     @abstractmethod
     def raw_score_list(self, smiles_list: Sequence[str]) -> list[float]:

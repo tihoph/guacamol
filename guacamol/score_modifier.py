@@ -1,7 +1,8 @@
 from abc import abstractmethod
-from functools import partial
-from typing import TypeVar, Any
 from collections.abc import Sequence
+from functools import partial
+from typing import Any, TypeVar
+
 import numpy as np
 from numpy.typing import NDArray
 
@@ -113,10 +114,7 @@ class MinMaxGaussianModifier(ScoreModifier):
         self._full_gaussian = GaussianModifier(mu=mu, sigma=sigma)
 
     def __call__(self, x: S) -> S:
-        if self.minimize:
-            mod_x = np.maximum(x, self.mu)
-        else:
-            mod_x = np.minimum(x, self.mu)
+        mod_x = np.maximum(x, self.mu) if self.minimize else np.minimum(x, self.mu)
         return self._full_gaussian(mod_x)
 
 

@@ -1,29 +1,29 @@
 from __future__ import annotations
 
-from argparse import ArgumentParser
 import argparse
 import gzip
 import hashlib
 import logging
-import numpy as np
 import os.path
 import pkgutil
-import platform
+from argparse import ArgumentParser
+from typing import TYPE_CHECKING, ContextManager, TextIO
+
+import numpy as np
 from joblib import Parallel, delayed
-from collections.abc import Iterable
-from collections.abc import Collection
+
 from guacamol.utils.chemistry import (
     canonicalize_list,
     filter_and_canonicalize,
+    get_fingerprints_from_smileslist,
     initialise_neutralisation_reactions,
     split_charged_mol,
-    get_fingerprints_from_smileslist,
 )
 from guacamol.utils.data import download_if_not_present
 from guacamol.utils.helpers import setup_default_logger
 
-from typing import TextIO, ContextManager
-from collections.abc import Mapping, Callable
+if TYPE_CHECKING:
+    from collections.abc import Callable, Collection, Iterable
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
@@ -161,7 +161,7 @@ def get_raw_smiles(
             if isinstance(line, bytes):
                 line = line.decode("utf-8")
 
-            # smiles = line.split('\t')[1]
+            # smiles = line.split('\t')[1] # noqa: ERA001
 
             smiles = extract_fn(line)
 
@@ -198,10 +198,10 @@ def compare_hash(output_file: str, correct_hash: str) -> bool:
     Computes the md5 hash of a SMILES file and check it against a given one
     Returns false if hashes are different
     """
-    output_hash = hashlib.md5(open(output_file, "rb").read()).hexdigest()
+    output_hash = hashlib.md5(open(output_file, "rb").read()).hexdigest()  # noqa: S324, SIM115
     if output_hash != correct_hash:
         logger.error(
-            f"{output_file} file has different hash, {output_hash}, than expected, {correct_hash}!"
+            f"{output_file} file has different hash, {output_hash}, than expected, {correct_hash}!",
         )
         return False
 
@@ -237,7 +237,7 @@ def main() -> None:
     data = raw_data.decode("utf-8").splitlines()
 
     holdout_mols = [i.split(" ")[0] for i in data]
-    holdout_set = set(canonicalize_list(holdout_mols, False))
+    holdout_set = list(set(canonicalize_list(holdout_mols, False)))
     holdout_fps = get_fingerprints_from_smileslist(holdout_set)
 
     # Download Chembl24 if needed.
@@ -253,7 +253,7 @@ def main() -> None:
 
     print(
         f"and standardizing {len(raw_smiles)} molecules using {args.n_jobs} cores, "
-        f"and excluding molecules based on ECFP4 similarity of > {TANIMOTO_CUTOFF} to the holdout set."
+        f"and excluding molecules based on ECFP4 similarity of > {TANIMOTO_CUTOFF} to the holdout set.",
     )
 
     # Process all the SMILES in parallel
@@ -275,7 +275,7 @@ def main() -> None:
 
     # Put all nonzero molecules in a list, remove duplicates, sort and shuffle
 
-    all_good_mols = sorted(list(set([item[0] for item in output if item])))
+    all_good_mols = sorted({item[0] for item in output if item})
     np.random.shuffle(all_good_mols)
     print(f"Ended up with {len(all_good_mols)} molecules. Preparing splits...")
 

@@ -1,32 +1,34 @@
 from __future__ import annotations
 
-from collections.abc import Callable
+from typing import TYPE_CHECKING, Literal
 
 from rdkit import Chem
-from typing import Literal
 from rdkit.DataStructs.cDataStructs import TanimotoSimilarity
 
-from guacamol.utils.descriptors import (
-    mol_weight,
-    logP,
-    num_H_donors,
-    tpsa,
-    num_atoms,
-    AtomCounter,
-)
-from guacamol.utils.fingerprints import get_fingerprint, FpNameT
 from guacamol.score_modifier import (
-    ScoreModifier,
-    MinGaussianModifier,
-    MaxGaussianModifier,
     GaussianModifier,
+    MaxGaussianModifier,
+    MinGaussianModifier,
+    ScoreModifier,
 )
 from guacamol.scoring_function import (
-    ScoringFunctionBasedOnRdkitMol,
     MoleculewiseScoringFunction,
+    ScoringFunctionBasedOnRdkitMol,
 )
-from guacamol.utils.chemistry import smiles_to_rdkit_mol, parse_molecular_formula
+from guacamol.utils.chemistry import parse_molecular_formula, smiles_to_rdkit_mol
+from guacamol.utils.descriptors import (
+    AtomCounter,
+    logP,
+    mol_weight,
+    num_atoms,
+    num_H_donors,
+    tpsa,
+)
+from guacamol.utils.fingerprints import FpNameT, get_fingerprint
 from guacamol.utils.math import arithmetic_mean, geometric_mean
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 MeanFuncT = Literal["geometric", "arithmetic"]
 
@@ -59,7 +61,10 @@ class TanimotoScoringFunction(ScoringFunctionBasedOnRdkitMol):
     """
 
     def __init__(
-        self, target: str, fp_type: FpNameT, score_modifier: ScoreModifier | None = None
+        self,
+        target: str,
+        fp_type: FpNameT,
+        score_modifier: ScoreModifier | None = None,
     ) -> None:
         """
         Args:
@@ -172,7 +177,7 @@ class IsomerScoringFunction(MoleculewiseScoringFunction):
             RdkitScoringFunction(
                 descriptor=num_atoms,
                 score_modifier=GaussianModifier(mu=total_number_atoms, sigma=2.0),
-            )
+            ),
         )
 
         return functions
@@ -212,10 +217,7 @@ class SMARTSScoringFunction(ScoringFunctionBasedOnRdkitMol):
         if len(matches) > 0:
             if self.inverse:
                 return 0.0
-            else:
-                return 1.0
-        else:
-            if self.inverse:
-                return 1.0
-            else:
-                return 0.0
+            return 1.0
+        if self.inverse:
+            return 1.0
+        return 0.0
