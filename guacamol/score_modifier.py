@@ -37,7 +37,7 @@ class ChainedModifier(ScoreModifier):
         """
         self.modifiers = modifiers
 
-    def __call__(self, x):
+    def __call__(self, x: float) -> float:
         score = x
         for modifier in self.modifiers:
             score = modifier(score)
@@ -49,10 +49,10 @@ class LinearModifier(ScoreModifier):
     Score modifier that multiplies the score by a scalar (default: 1, i.e. do nothing).
     """
 
-    def __init__(self, slope=1.0):
+    def __init__(self, slope: float=1.0) -> None:
         self.slope = slope
 
-    def __call__(self, x):
+    def __call__(self, x: object):
         return self.slope * x
 
 
@@ -62,7 +62,7 @@ class SquaredModifier(ScoreModifier):
     quadratically with increasing distance from the target value.
     """
 
-    def __init__(self, target_value: float, coefficient=1.0) -> None:
+    def __init__(self, target_value: float, coefficient: float=1.0) -> None:
         self.target_value = target_value
         self.coefficient = coefficient
 
@@ -103,7 +103,7 @@ class MinMaxGaussianModifier(ScoreModifier):
     For minimize==False, the function is 1.0 for x >= mu and decreases to zero for x < mu.
     """
 
-    def __init__(self, mu: float, sigma: float, minimize=False) -> None:
+    def __init__(self, mu: float, sigma: float, minimize: bool=False) -> None:
         self.mu = mu
         self.sigma = sigma
         self.minimize = minimize
@@ -138,7 +138,7 @@ class ClippedScoreModifier(ScoreModifier):
     Then the generated values are clipped between low and high scores.
     """
 
-    def __init__(self, upper_x: float, lower_x=0.0, high_score=1.0, low_score=0.0) -> None:
+    def __init__(self, upper_x: float, lower_x: float=0.0, high_score: float=1.0, low_score: float=0.0) -> None:
         """
         Args:
             upper_x: x-value from which (or until which if smaller than lower_x) the score is maximal
@@ -156,7 +156,7 @@ class ClippedScoreModifier(ScoreModifier):
         self.slope = (high_score - low_score) / (upper_x - lower_x)
         self.intercept = high_score - self.slope * upper_x
 
-    def __call__(self, x):
+    def __call__(self, x: object):
         y = self.slope * x + self.intercept
         return np.clip(y, self.low_score, self.high_score)
 
@@ -169,7 +169,7 @@ class SmoothClippedScoreModifier(ScoreModifier):
     center of the logistic function.
     """
 
-    def __init__(self, upper_x: float, lower_x=0.0, high_score=1.0, low_score=0.0) -> None:
+    def __init__(self, upper_x: float, lower_x: float=0.0, high_score: float=1.0, low_score: float=0.0) -> None:
         """
         Args:
             upper_x: x-value from which (or until which if smaller than lower_x) the score approaches high_score
@@ -189,7 +189,7 @@ class SmoothClippedScoreModifier(ScoreModifier):
         self.middle_x = (upper_x + lower_x) / 2
         self.L = high_score - low_score
 
-    def __call__(self, x):
+    def __call__(self, x: float):
         return self.low_score + self.L / (1 + np.exp(-self.k * (x - self.middle_x)))
 
 

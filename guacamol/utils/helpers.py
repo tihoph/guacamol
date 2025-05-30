@@ -1,7 +1,7 @@
 import logging
 
 
-def setup_default_logger():
+def setup_default_logger() -> None:
     """
     Call this function in your main function to initialize a basic logger.
 

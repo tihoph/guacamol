@@ -12,7 +12,7 @@ from guacamol.utils.descriptors import num_rotatable_bonds, num_aromatic_rings, 
     AtomCounter, num_rings
 
 
-def isomers_c11h24(mean_function='geometric') -> GoalDirectedBenchmark:
+def isomers_c11h24(mean_function: str='geometric') -> GoalDirectedBenchmark:
     """
     Benchmark to try and get all C11H24 molecules there are.
     There should be 159 if one ignores stereochemistry.
@@ -28,7 +28,7 @@ def isomers_c11h24(mean_function='geometric') -> GoalDirectedBenchmark:
                                  contribution_specification=specification)
 
 
-def isomers_c7h8n2o2(mean_function='geometric') -> GoalDirectedBenchmark:
+def isomers_c7h8n2o2(mean_function: str='geometric') -> GoalDirectedBenchmark:
     """
     Benchmark to try and get 100 isomers for C7H8N2O2.
 
@@ -43,7 +43,7 @@ def isomers_c7h8n2o2(mean_function='geometric') -> GoalDirectedBenchmark:
                                  contribution_specification=specification)
 
 
-def isomers_c9h10n2o2pf2cl(mean_function='geometric', n_samples=250) -> GoalDirectedBenchmark:
+def isomers_c9h10n2o2pf2cl(mean_function: str='geometric', n_samples: int=250) -> GoalDirectedBenchmark:
     """
     Benchmark to try and get 100 isomers for C9H10N2O2PF2Cl.
 
@@ -58,7 +58,7 @@ def isomers_c9h10n2o2pf2cl(mean_function='geometric', n_samples=250) -> GoalDire
                                  contribution_specification=specification)
 
 
-def hard_cobimetinib(max_logP=5.0) -> GoalDirectedBenchmark:
+def hard_cobimetinib(max_logP: float=5.0) -> GoalDirectedBenchmark:
     smiles = 'OC1(CN(C1)C(=O)C1=C(NC2=C(F)C=C(I)C=C2)C(F)=C(F)C=C1)C1CCCCN1'
 
     modifier = ClippedScoreModifier(upper_x=0.7)
@@ -81,7 +81,7 @@ def hard_cobimetinib(max_logP=5.0) -> GoalDirectedBenchmark:
                                  contribution_specification=specification)
 
 
-def hard_osimertinib(mean_cls=GeometricMeanScoringFunction) -> GoalDirectedBenchmark:
+def hard_osimertinib(mean_cls: type=GeometricMeanScoringFunction) -> GoalDirectedBenchmark:
     smiles = 'COc1cc(N(C)CCN(C)C)c(NC(=O)C=C)cc1Nc2nccc(n2)c3cn(C)c4ccccc34'
 
     modifier = ClippedScoreModifier(upper_x=0.8)
@@ -106,7 +106,7 @@ def hard_osimertinib(mean_cls=GeometricMeanScoringFunction) -> GoalDirectedBench
                                  contribution_specification=specification)
 
 
-def hard_fexofenadine(mean_cls=GeometricMeanScoringFunction) -> GoalDirectedBenchmark:
+def hard_fexofenadine(mean_cls: type=GeometricMeanScoringFunction) -> GoalDirectedBenchmark:
     """
     make fexofenadine less greasy
     :return:
@@ -180,7 +180,7 @@ def weird_physchem() -> GoalDirectedBenchmark:
                                  contribution_specification=specification)
 
 
-def similarity_cns_mpo(smiles, molecule_name, max_logP=5.0) -> GoalDirectedBenchmark:
+def similarity_cns_mpo(smiles, molecule_name: object, max_logP: float=5.0) -> GoalDirectedBenchmark:
     benchmark_name = f'{molecule_name}'
     os_tf = TanimotoScoringFunction(smiles, fp_type='FCFP4')
     os_ap = TanimotoScoringFunction(smiles, fp_type='AP')
@@ -237,7 +237,7 @@ def tpsa_benchmark(target: float) -> GoalDirectedBenchmark:
                                  contribution_specification=specification)
 
 
-def cns_mpo(max_logP=5.0) -> GoalDirectedBenchmark:
+def cns_mpo(max_logP: float=5.0) -> GoalDirectedBenchmark:
     specification = uniform_specification(1, 10, 100)
     return GoalDirectedBenchmark(name='CNS MPO', objective=CNS_MPO_ScoringFunction(max_logP=max_logP),
                                  contribution_specification=specification)
@@ -250,7 +250,7 @@ def qed_benchmark() -> GoalDirectedBenchmark:
                                  contribution_specification=specification)
 
 
-def median_camphor_menthol(mean_cls=GeometricMeanScoringFunction) -> GoalDirectedBenchmark:
+def median_camphor_menthol(mean_cls: type=GeometricMeanScoringFunction) -> GoalDirectedBenchmark:
     t_camphor = TanimotoScoringFunction('CC1(C)C2CCC1(C)C(=O)C2', fp_type='ECFP4')
     t_menthol = TanimotoScoringFunction('CC(C)C1CCC(C)CC1O', fp_type='ECFP4')
     median = mean_cls([t_menthol, t_camphor])

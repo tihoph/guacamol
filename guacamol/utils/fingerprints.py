@@ -18,31 +18,31 @@ class _FingerprintCalculator:
             raise Exception(f'{fp_type} is not a supported fingerprint type.')
         return method(mol)
 
-    def get_AP(self, mol: Mol):
+    def get_AP(self, mol: Mol) -> AllChem:
         return AllChem.GetAtomPairFingerprint(mol, maxLength=10)
 
-    def get_PHCO(self, mol: Mol):
+    def get_PHCO(self, mol: Mol) -> Generate:
         return Generate.Gen2DFingerprint(mol, Gobbi_Pharm2D.factory)
 
-    def get_BPF(self, mol: Mol):
+    def get_BPF(self, mol: Mol) -> GetBPFingerprint:
         return GetBPFingerprint(mol)
 
-    def get_BTF(self, mol: Mol):
+    def get_BTF(self, mol: Mol) -> GetBTFingerprint:
         return GetBTFingerprint(mol)
 
-    def get_PATH(self, mol: Mol):
+    def get_PATH(self, mol: Mol) -> AllChem:
         return AllChem.RDKFingerprint(mol)
 
-    def get_ECFP4(self, mol: Mol):
+    def get_ECFP4(self, mol: Mol) -> AllChem:
         return AllChem.GetMorganFingerprint(mol, 2)
 
-    def get_ECFP6(self, mol: Mol):
+    def get_ECFP6(self, mol: Mol) -> AllChem:
         return AllChem.GetMorganFingerprint(mol, 3)
 
-    def get_FCFP4(self, mol: Mol):
+    def get_FCFP4(self, mol: Mol) -> AllChem:
         return AllChem.GetMorganFingerprint(mol, 2, useFeatures=True)
 
-    def get_FCFP6(self, mol: Mol):
+    def get_FCFP6(self, mol: Mol) -> AllChem:
         return AllChem.GetMorganFingerprint(mol, 3, useFeatures=True)
 
 

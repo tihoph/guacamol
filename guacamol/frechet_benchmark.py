@@ -25,8 +25,8 @@ class FrechetBenchmark(DistributionLearningBenchmark):
     """
 
     def __init__(self, training_set: List[str],
-                 chemnet_model_filename='ChemNet_v0.13_pretrained.pt',
-                 sample_size=10000) -> None:
+                 chemnet_model_filename: str='ChemNet_v0.13_pretrained.pt',
+                 sample_size: int=10000) -> None:
         """
         Args:
             training_set: molecules from the training set
@@ -68,7 +68,7 @@ class FrechetBenchmark(DistributionLearningBenchmark):
                                                    sampling_time=end_time - start_time,
                                                    metadata=metadata)
 
-    def _load_chemnet(self):
+    def _load_chemnet(self) -> fcd:
         """
         Load the ChemNet model from the file specified in the init function.
 

@@ -181,7 +181,7 @@ class ArithmeticMeanScoringFunction(BatchScoringFunction):
     Scoring function that combines multiple scoring functions linearly.
     """
 
-    def __init__(self, scoring_functions: List[ScoringFunction], weights=None) -> None:
+    def __init__(self, scoring_functions: List[ScoringFunction], weights: list[float] | None=None) -> None:
         """
         Args:
             scoring_functions: scoring functions to combine
@@ -239,15 +239,15 @@ class ScoringFunctionWrapper(ScoringFunction):
         self.scoring_function = scoring_function
         self.evaluations = 0
 
-    def score(self, smiles):
+    def score(self, smiles: str) -> float:
         self._increment_evaluation_count(1)
         return self.scoring_function.score(smiles)
 
-    def score_list(self, smiles_list):
+    def score_list(self, smiles_list: list[str]) -> list[float]:
         self._increment_evaluation_count(len(smiles_list))
         return self.scoring_function.score_list(smiles_list)
 
-    def _increment_evaluation_count(self, n: int):
+    def _increment_evaluation_count(self, n: int) -> None:
         # Ideally, this should be protected by a lock in order to allow for multithreading.
         # However, adding a threading.Lock member variable makes the class non-pickle-able, which prevents any multithreading.
         # Therefore, in the current implementation there cannot be a guarantee that self.evaluations will be calculated correctly.

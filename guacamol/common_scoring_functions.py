@@ -36,7 +36,7 @@ class TanimotoScoringFunction(ScoringFunctionBasedOnRdkitMol):
     Scoring function that looks at the fingerprint similarity against a target molecule.
     """
 
-    def __init__(self, target, fp_type, score_modifier: ScoreModifier  | None= None) -> None:
+    def __init__(self, target: str, fp_type: str, score_modifier: ScoreModifier  | None= None) -> None:
         """
         Args:
             target: target molecule
@@ -63,7 +63,7 @@ class CNS_MPO_ScoringFunction(ScoringFunctionBasedOnRdkitMol):
     CNS MPO scoring function
     """
 
-    def __init__(self, max_logP=5.0, maxMW=360, min_tpsa=40, max_tpsa=90, max_hbd=0) -> None:
+    def __init__(self, max_logP: float=5.0, maxMW: int=360, min_tpsa: int=40, max_tpsa: int=90, max_hbd: int=0) -> None:
         super().__init__()
 
         self.logP_gauss = MinGaussianModifier(max_logP, 1)
@@ -100,7 +100,7 @@ class IsomerScoringFunction(MoleculewiseScoringFunction):
     - total number of atoms with a Gaussian modifier with mu=6, sigma=2
     """
 
-    def __init__(self, molecular_formula: str, mean_function='geometric') -> None:
+    def __init__(self, molecular_formula: str, mean_function: str='geometric') -> None:
         """
         Args:
             molecular_formula: target molecular formula
@@ -151,7 +151,7 @@ class SMARTSScoringFunction(ScoringFunctionBasedOnRdkitMol):
 
     """
 
-    def __init__(self, target: str, inverse=False) -> None:
+    def __init__(self, target: str, inverse: bool=False) -> None:
         """
 
         :param target: The SMARTS string to match.

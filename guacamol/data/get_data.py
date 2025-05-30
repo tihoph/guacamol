@@ -1,3 +1,4 @@
+from argparse import ArgumentParser
 import argparse
 import gzip
 import hashlib
@@ -28,7 +29,7 @@ CHEMBL_FILE_NAME = 'chembl_24_1_chemreps.txt.gz'
 TANIMOTO_CUTOFF = 0.323
 
 
-def get_argparser():
+def get_argparser() -> ArgumentParser:
     parser = argparse.ArgumentParser(description='Data Preparation for GuacaMol',
                                      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser.add_argument('-o', '--destination', default='.', help='Download and Output location')
@@ -128,7 +129,7 @@ def get_raw_smiles(file_name, smiles_char_dict, open_fn, extract_fn) -> List[str
     return data
 
 
-def write_smiles(dataset: Iterable[str], filename: str):
+def write_smiles(dataset: Iterable[str], filename: str) -> None:
     """
     Dumps a list of SMILES into a file, one per line
     """
@@ -153,7 +154,7 @@ def compare_hash(output_file: str, correct_hash: str) -> bool:
     return True
 
 
-def main():
+def main() -> None:
     """ Get Chembl-24.
 
     Preprocessing steps:

@@ -1,3 +1,4 @@
+from typing import Sized
 import logging
 import re
 from typing import Optional, List, Iterable, Collection, Tuple
@@ -19,7 +20,7 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
 
-def is_valid(smiles: str):
+def is_valid(smiles: str) -> Literal[False] | Chem:
     """
     Verifies whether a SMILES string corresponds to a valid molecule.
 
@@ -35,7 +36,7 @@ def is_valid(smiles: str):
     return smiles != '' and mol is not None and mol.GetNumAtoms() > 0
 
 
-def canonicalize(smiles: str, include_stereocenters=True) -> Optional[str]:
+def canonicalize(smiles: str, include_stereocenters: bool=True) -> Optional[str]:
     """
     Canonicalize the SMILES strings with RDKit.
 
@@ -57,7 +58,7 @@ def canonicalize(smiles: str, include_stereocenters=True) -> Optional[str]:
         return None
 
 
-def canonicalize_list(smiles_list: Iterable[str], include_stereocenters=True) -> List[str]:
+def canonicalize_list(smiles_list: Iterable[str], include_stereocenters: bool=True) -> List[str]:
     """
     Canonicalize a list of smiles. Filters out repetitions and removes corrupted molecules.
 
@@ -114,7 +115,7 @@ def split_charged_mol(smiles: str) -> str:
         return smiles
 
 
-def initialise_neutralisation_reactions():
+def initialise_neutralisation_reactions() -> list[tuple[Chem, Chem]]:
     patts = (
         # Imidazoles
         ('[n+;H]', 'n'),
@@ -153,8 +154,8 @@ def neutralise_charges(mol, reactions=None):
         return mol, False
 
 
-def filter_and_canonicalize(smiles: str, holdout_set, holdout_fps, neutralization_rxns, tanimoto_cutoff=0.5,
-                            include_stereocenters=False):
+def filter_and_canonicalize(smiles: str, holdout_set, holdout_fps, neutralization_rxns, tanimoto_cutoff: float=0.5,
+                            include_stereocenters: bool=False) -> list[Chem]:
     """
     Args:
         smiles: the molecule to process
@@ -262,7 +263,7 @@ def calculate_pairwise_similarities(smiles_list1: List[str], smiles_list2: List[
     return np.array(similarities)
 
 
-def get_fingerprints_from_smileslist(smiles_list):
+def get_fingerprints_from_smileslist(smiles_list: set[str]):
     """
     Converts the provided smiles into ECFP4 bitvectors of length 4096.
 
@@ -275,7 +276,7 @@ def get_fingerprints_from_smileslist(smiles_list):
     return get_fingerprints(get_mols(smiles_list))
 
 
-def get_fingerprints(mols: Iterable[Chem.Mol], radius=2, length=4096):
+def get_fingerprints(mols: Iterable[Chem.Mol], radius: int=2, length: int=4096) -> list[AllChem]:
     """
     Converts molecules to ECFP bitvectors.
 
@@ -299,7 +300,7 @@ def get_mols(smiles_list: Iterable[str]) -> Iterable[Chem.Mol]:
             logger.warning(e)
 
 
-def highest_tanimoto_precalc_fps(mol, fps):
+def highest_tanimoto_precalc_fps(mol, fps: Sized):
     """
 
     Args:

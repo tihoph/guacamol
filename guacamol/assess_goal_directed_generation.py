@@ -15,8 +15,8 @@ logger.addHandler(logging.NullHandler())
 
 
 def assess_goal_directed_generation(goal_directed_molecule_generator: GoalDirectedGenerator,
-                                    json_output_file='output_goal_directed.json',
-                                    benchmark_version='v1') -> None:
+                                    json_output_file: str='output_goal_directed.json',
+                                    benchmark_version: str='v1') -> None:
     """
     Assesses a distribution-matching model for de novo molecule design.
 

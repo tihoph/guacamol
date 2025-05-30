@@ -65,7 +65,7 @@ def get_random_subset(dataset: List[Any], subset_size: int, seed: Optional[int] 
     return list(subset)
 
 
-def download_if_not_present(filename, uri):
+def download_if_not_present(filename: str, uri: str) -> None:
     """
     Download a file from a URI if it doesn't already exist.
     """
@@ -99,7 +99,7 @@ class ProgressBarUpTo(ProgressBar):
     Fancy Progress Bar that accepts a position not a delta.
     """
 
-    def update_to(self, b=1, bsize=1, tsize=None):
+    def update_to(self, b: int=1, bsize: int=1, tsize=None) -> None:
         """
             Update to a specified position.
         """
@@ -108,6 +108,6 @@ class ProgressBarUpTo(ProgressBar):
         self.update(b * bsize - self.n)  # will also set self.n = b * bsize
 
 
-def get_time_string():
+def get_time_string() -> str:
     lt = time.localtime()
     return "%04d%02d%02d-%02d%02d" % (lt.tm_year, lt.tm_mon, lt.tm_mday, lt.tm_hour, lt.tm_min)
