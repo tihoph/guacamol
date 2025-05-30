@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 from typing import Sized
 import logging
 import re
-from typing import Optional, List, Iterable, Collection, Tuple
 
 import numpy as np
 from rdkit import Chem
@@ -10,9 +11,10 @@ from rdkit.Chem import AllChem
 from rdkit.ML.Descriptors import MoleculeDescriptors
 from numpy import histogram
 from scipy.stats import entropy, gaussian_kde
-
+from numpy.typing import NDArray
+from rdkit.DataStructs import ExplicitBitVect
 from guacamol.utils.data import remove_duplicates
-
+from collections.abc import Sequence, Iterable, Collection,Generator
 # Mute RDKit logger
 RDLogger.logger().setLevel(RDLogger.CRITICAL)
 
@@ -20,7 +22,7 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
 
-def is_valid(smiles: str) -> Literal[False] | Chem:
+def is_valid(smiles: str) -> bool:
     """
     Verifies whether a SMILES string corresponds to a valid molecule.
 
@@ -36,7 +38,7 @@ def is_valid(smiles: str) -> Literal[False] | Chem:
     return smiles != '' and mol is not None and mol.GetNumAtoms() > 0
 
 
-def canonicalize(smiles: str, include_stereocenters: bool=True) -> Optional[str]:
+def canonicalize(smiles: str, include_stereocenters: bool=True) -> str | None:
     """
     Canonicalize the SMILES strings with RDKit.
 
@@ -58,7 +60,7 @@ def canonicalize(smiles: str, include_stereocenters: bool=True) -> Optional[str]
         return None
 
 
-def canonicalize_list(smiles_list: Iterable[str], include_stereocenters: bool=True) -> List[str]:
+def canonicalize_list(smiles_list: Iterable[str], include_stereocenters: bool=True) -> list[str]:
     """
     Canonicalize a list of smiles. Filters out repetitions and removes corrupted molecules.
 
@@ -73,12 +75,12 @@ def canonicalize_list(smiles_list: Iterable[str], include_stereocenters: bool=Tr
     canonicalized_smiles = [canonicalize(smiles, include_stereocenters) for smiles in smiles_list]
 
     # Remove None elements
-    canonicalized_smiles = [s for s in canonicalized_smiles if s is not None]
+    valid_canonicalized_smiles = [s for s in canonicalized_smiles if s is not None]
 
-    return remove_duplicates(canonicalized_smiles)
+    return remove_duplicates(valid_canonicalized_smiles)
 
 
-def smiles_to_rdkit_mol(smiles: str) -> Optional[Chem.Mol]:
+def smiles_to_rdkit_mol(smiles: str) -> Chem.Mol | None:
     """
     Converts a SMILES string to a RDKit molecule.
 
@@ -115,7 +117,7 @@ def split_charged_mol(smiles: str) -> str:
         return smiles
 
 
-def initialise_neutralisation_reactions() -> list[tuple[Chem, Chem]]:
+def initialise_neutralisation_reactions() -> list[tuple[Chem.Mol, Chem.Mol]]:
     patts = (
         # Imidazoles
         ('[n+;H]', 'n'),
@@ -139,7 +141,10 @@ def initialise_neutralisation_reactions() -> list[tuple[Chem, Chem]]:
     return [(Chem.MolFromSmarts(x), Chem.MolFromSmiles(y, False)) for x, y in patts]
 
 
-def neutralise_charges(mol, reactions=None):
+def neutralise_charges(mol: Chem.Mol, reactions: Sequence[tuple[Chem.Mol, Chem.Mol]] | None=None) -> tuple[Chem.Mol, bool]:
+    if reactions is None:
+        reactions = initialise_neutralisation_reactions()
+    
     replaced = False
 
     for i, (reactant, product) in enumerate(reactions):
@@ -154,8 +159,8 @@ def neutralise_charges(mol, reactions=None):
         return mol, False
 
 
-def filter_and_canonicalize(smiles: str, holdout_set, holdout_fps, neutralization_rxns, tanimoto_cutoff: float=0.5,
-                            include_stereocenters: bool=False) -> list[Chem]:
+def filter_and_canonicalize(smiles: str, holdout_set: Sequence[str], holdout_fps: Sequence[ExplicitBitVect], neutralization_rxns: Sequence[tuple[Chem.Mol, Chem.Mol]], tanimoto_cutoff: float=0.5,
+                            include_stereocenters: bool=False) -> list[str]:
     """
     Args:
         smiles: the molecule to process
@@ -211,7 +216,7 @@ def filter_and_canonicalize(smiles: str, holdout_set, holdout_fps, neutralizatio
     return []
 
 
-def calculate_internal_pairwise_similarities(smiles_list: Collection[str]) -> np.ndarray:
+def calculate_internal_pairwise_similarities(smiles_list: Collection[str]) -> NDArray[np.float64]:
     """
     Computes the pairwise similarities of the provided list of smiles against itself.
 
@@ -236,7 +241,7 @@ def calculate_internal_pairwise_similarities(smiles_list: Collection[str]) -> np
     return similarities
 
 
-def calculate_pairwise_similarities(smiles_list1: List[str], smiles_list2: List[str]) -> np.ndarray:
+def calculate_pairwise_similarities(smiles_list1: Sequence[str], smiles_list2: Sequence[str]) -> np.ndarray:
     """
     Computes the pairwise ECFP4 tanimoto similarity of the two smiles containers.
 
@@ -276,7 +281,7 @@ def get_fingerprints_from_smileslist(smiles_list: set[str]):
     return get_fingerprints(get_mols(smiles_list))
 
 
-def get_fingerprints(mols: Iterable[Chem.Mol], radius: int=2, length: int=4096) -> list[AllChem]:
+def get_fingerprints(mols: Iterable[Chem.Mol], radius: int=2, length: int=4096) -> list[ExplicitBitVect]:
     """
     Converts molecules to ECFP bitvectors.
 
@@ -290,7 +295,7 @@ def get_fingerprints(mols: Iterable[Chem.Mol], radius: int=2, length: int=4096) 
     return [AllChem.GetMorganFingerprintAsBitVect(m, radius, length) for m in mols]
 
 
-def get_mols(smiles_list: Iterable[str]) -> Iterable[Chem.Mol]:
+def get_mols(smiles_list: Iterable[str]) -> Generator[Chem.Mol]:
     for i in smiles_list:
         try:
             mol = Chem.MolFromSmiles(i)
@@ -300,7 +305,7 @@ def get_mols(smiles_list: Iterable[str]) -> Iterable[Chem.Mol]:
             logger.warning(e)
 
 
-def highest_tanimoto_precalc_fps(mol, fps: Sized):
+def highest_tanimoto_precalc_fps(mol: Chem.Mol, fps: Sequence[ExplicitBitVect]) -> float:
     """
 
     Args:
@@ -320,7 +325,7 @@ def highest_tanimoto_precalc_fps(mol, fps: Sized):
     return sims.max()
 
 
-def continuous_kldiv(X_baseline: np.ndarray, X_sampled: np.ndarray) -> float:
+def continuous_kldiv(X_baseline: NDArray[np.float64], X_sampled: NDArray[np.float64]) -> float:
     kde_P = gaussian_kde(X_baseline)
     kde_Q = gaussian_kde(X_sampled)
     x_eval = np.linspace(np.hstack([X_baseline, X_sampled]).min(), np.hstack([X_baseline, X_sampled]).max(), num=1000)
@@ -330,7 +335,7 @@ def continuous_kldiv(X_baseline: np.ndarray, X_sampled: np.ndarray) -> float:
     return entropy(P, Q)
 
 
-def discrete_kldiv(X_baseline: np.ndarray, X_sampled: np.ndarray) -> float:
+def discrete_kldiv(X_baseline: NDArray[np.float64], X_sampled: NDArray[np.float64]) -> float:
     P, bins = histogram(X_baseline, bins=10, density=True)
     P += 1e-10
     Q, _ = histogram(X_sampled, bins=bins, density=True)
@@ -339,8 +344,8 @@ def discrete_kldiv(X_baseline: np.ndarray, X_sampled: np.ndarray) -> float:
     return entropy(P, Q)
 
 
-def calculate_pc_descriptors(smiles: Iterable[str], pc_descriptors: List[str]) -> np.ndarray:
-    output = []
+def calculate_pc_descriptors(smiles: Iterable[str], pc_descriptors: Sequence[str]) -> NDArray[np.float64]:
+    output: list[NDArray[np.float64]] = []
 
     for i in smiles:
         d = _calculate_pc_descriptors(i, pc_descriptors)
@@ -350,7 +355,7 @@ def calculate_pc_descriptors(smiles: Iterable[str], pc_descriptors: List[str]) -
     return np.array(output)
 
 
-def _calculate_pc_descriptors(smiles: str, pc_descriptors: List[str]) -> Optional[np.ndarray]:
+def _calculate_pc_descriptors(smiles: str, pc_descriptors: Sequence[str]) -> NDArray[np.float64] | None:
     calc = MoleculeDescriptors.MolecularDescriptorCalculator(pc_descriptors)
 
     mol = Chem.MolFromSmiles(smiles)
@@ -366,7 +371,7 @@ def _calculate_pc_descriptors(smiles: str, pc_descriptors: List[str]) -> Optiona
     return _fp
 
 
-def parse_molecular_formula(formula: str) -> List[Tuple[str, int]]:
+def parse_molecular_formula(formula: str) -> list[tuple[str, int]]:
     """
     Parse a molecular formulat to get the element types and counts.
 

@@ -4,7 +4,7 @@ import pytest
 from guacamol.utils.data import get_random_subset
 
 
-def test_subset():
+def test_subset() -> None:
     dataset = list(np.random.rand(100))
 
     subset = get_random_subset(dataset, 10)
@@ -13,14 +13,14 @@ def test_subset():
         assert s in dataset
 
 
-def test_subset_if_dataset_too_small():
+def test_subset_if_dataset_too_small() -> None:
     dataset = list(np.random.rand(100))
 
     with pytest.raises(Exception):
         get_random_subset(dataset, 1000)
 
 
-def test_subset_with_no_seed():
+def test_subset_with_no_seed() -> None:
     dataset = list(np.random.rand(100))
 
     subset1 = get_random_subset(dataset, 10)
@@ -29,7 +29,7 @@ def test_subset_with_no_seed():
     assert subset1 != subset2
 
 
-def test_subset_with_random_seed():
+def test_subset_with_random_seed() -> None:
     dataset = list(np.random.rand(100))
 
     subset1 = get_random_subset(dataset, 10, seed=33)

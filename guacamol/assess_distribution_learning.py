@@ -1,9 +1,9 @@
 import datetime
 import json
 import logging
-from collections import OrderedDict
-from typing import List, Dict, Any
-
+from typing import Any
+from typing import Literal
+from collections.abc import Sequence
 import guacamol
 from guacamol.distribution_learning_benchmark import DistributionLearningBenchmark, DistributionLearningBenchmarkResult
 from guacamol.distribution_matching_generator import DistributionMatchingGenerator
@@ -17,7 +17,7 @@ logger.addHandler(logging.NullHandler())
 def assess_distribution_learning(model: DistributionMatchingGenerator,
                                  chembl_training_file: str,
                                  json_output_file: str='output_distribution_learning.json',
-                                 benchmark_version: str='v1') -> None:
+                                 benchmark_version: Literal["v1", "v2"]='v1') -> None:
     """
     Assesses a distribution-matching model for de novo molecule design.
 
@@ -37,7 +37,7 @@ def assess_distribution_learning(model: DistributionMatchingGenerator,
 def _assess_distribution_learning(model: DistributionMatchingGenerator,
                                   chembl_training_file: str,
                                   json_output_file: str,
-                                  benchmark_version: str,
+                                  benchmark_version: Literal["v1", "v2"],
                                   number_samples: int) -> None:
     """
     Internal equivalent to assess_distribution_learning, but allows for a flexible number of samples.
@@ -50,7 +50,7 @@ def _assess_distribution_learning(model: DistributionMatchingGenerator,
 
     results = _evaluate_distribution_learning_benchmarks(model=model, benchmarks=benchmarks)
 
-    benchmark_results: Dict[str, Any] = OrderedDict()
+    benchmark_results: dict[str, Any] = {}
     benchmark_results['guacamol_version'] = guacamol.__version__
     benchmark_results['benchmark_suite_version'] = benchmark_version
     benchmark_results['timestamp'] = get_time_string()
@@ -63,8 +63,8 @@ def _assess_distribution_learning(model: DistributionMatchingGenerator,
 
 
 def _evaluate_distribution_learning_benchmarks(model: DistributionMatchingGenerator,
-                                               benchmarks: List[DistributionLearningBenchmark]
-                                               ) -> List[DistributionLearningBenchmarkResult]:
+                                               benchmarks: Sequence[DistributionLearningBenchmark]
+                                               ) -> list[DistributionLearningBenchmarkResult]:
     """
     Evaluate a model with the given benchmarks.
     Should not be called directly except for testing purposes.
@@ -77,7 +77,7 @@ def _evaluate_distribution_learning_benchmarks(model: DistributionMatchingGenera
 
     logger.info(f'Number of benchmarks: {len(benchmarks)}')
 
-    results = []
+    results: list[DistributionLearningBenchmarkResult] = []
     for i, benchmark in enumerate(benchmarks, 1):
         logger.info(f'Running benchmark {i}/{len(benchmarks)}: {benchmark.name}')
         result = benchmark.assess_model(model)

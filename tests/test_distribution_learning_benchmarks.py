@@ -1,3 +1,4 @@
+
 from guacamol.distribution_learning_benchmark import ValidityBenchmark, UniquenessBenchmark, NoveltyBenchmark, \
     KLDivBenchmark
 from guacamol.assess_distribution_learning import _assess_distribution_learning
@@ -7,42 +8,42 @@ import tempfile
 from os.path import join
 
 
-def test_validity_does_not_penalize_duplicates():
+def test_validity_does_not_penalize_duplicates() -> None:
     generator = MockGenerator(['CCC', 'CCC'])
     benchmark = ValidityBenchmark(number_samples=2)
 
     assert benchmark.assess_model(generator).score == 1.0
 
 
-def test_validity_score_is_proportion_of_valid_molecules():
+def test_validity_score_is_proportion_of_valid_molecules() -> None:
     generator = MockGenerator(['CCC', 'CC(CC)C', 'invalidMolecule'])
     benchmark = ValidityBenchmark(number_samples=3)
 
     assert benchmark.assess_model(generator).score == 2.0 / 3.0
 
 
-def test_uniqueness_penalizes_duplicates():
+def test_uniqueness_penalizes_duplicates() -> None:
     generator = MockGenerator(['CCC', 'CCC', 'CCC'])
     benchmark = UniquenessBenchmark(number_samples=3)
 
     assert benchmark.assess_model(generator).score == 1.0 / 3.0
 
 
-def test_uniqueness_penalizes_duplicates_with_different_smiles_strings():
+def test_uniqueness_penalizes_duplicates_with_different_smiles_strings() -> None:
     generator = MockGenerator(['C(O)C', 'CCO', 'OCC'])
     benchmark = UniquenessBenchmark(number_samples=3)
 
     assert benchmark.assess_model(generator).score == 1.0 / 3.0
 
 
-def test_uniqueness_does_not_penalize_invalid_molecules():
+def test_uniqueness_does_not_penalize_invalid_molecules() -> None:
     generator = MockGenerator(['C(O)C', 'invalid1', 'invalid2', 'CCC', 'NCCN'])
     benchmark = UniquenessBenchmark(number_samples=3)
 
     assert benchmark.assess_model(generator).score == 1.0
 
 
-def test_novelty_score_is_zero_if_no_molecule_is_new():
+def test_novelty_score_is_zero_if_no_molecule_is_new() -> None:
     molecules = ['CCOCC', 'NNNNONNN', 'C=CC=C']
     generator = MockGenerator(molecules)
     benchmark = NoveltyBenchmark(number_samples=3, training_set=molecules)
@@ -50,14 +51,14 @@ def test_novelty_score_is_zero_if_no_molecule_is_new():
     assert benchmark.assess_model(generator).score == 0.0
 
 
-def test_novelty_score_is_one_if_all_molecules_are_new():
+def test_novelty_score_is_one_if_all_molecules_are_new() -> None:
     generator = MockGenerator(['CCOCC', 'NNNNONNN', 'C=CC=C'])
     benchmark = NoveltyBenchmark(number_samples=3, training_set=['CO', 'CC'])
 
     assert benchmark.assess_model(generator).score == 1.0
 
 
-def test_novelty_score_does_not_penalize_duplicates():
+def test_novelty_score_does_not_penalize_duplicates() -> None:
     generator = MockGenerator(['CCOCC', 'O(CC)CC', 'C=CC=C', 'CC'])
     benchmark = NoveltyBenchmark(number_samples=3, training_set=['CO', 'CC'])
 
@@ -66,14 +67,14 @@ def test_novelty_score_does_not_penalize_duplicates():
     assert benchmark.assess_model(generator).score == 2.0 / 3.0
 
 
-def test_novelty_score_penalizes_invalid_molecules():
+def test_novelty_score_penalizes_invalid_molecules() -> None:
     generator = MockGenerator(['CCOCC', 'invalid1', 'invalid2', 'CCCC', 'CC'])
     benchmark = NoveltyBenchmark(number_samples=3, training_set=['CO', 'CC'])
 
     assert benchmark.assess_model(generator).score == 2.0 / 3.0
 
 
-def test_KLdiv_benchmark_same_dist():
+def test_KLdiv_benchmark_same_dist() -> None:
     generator = MockGenerator(['CCOCC', 'NNNNONNN', 'C=CC=C'])
     benchmark = KLDivBenchmark(number_samples=3, training_set=['CCOCC', 'NNNNONNN', 'C=CC=C'])
     result = benchmark.assess_model(generator)
@@ -81,7 +82,7 @@ def test_KLdiv_benchmark_same_dist():
     assert np.isclose(result.score, 1.0, )
 
 
-def test_KLdiv_benchmark_different_dist():
+def test_KLdiv_benchmark_different_dist() -> None:
     generator = MockGenerator(['CCOCC', 'NNNNONNN', 'C=CC=C'])
     benchmark = KLDivBenchmark(number_samples=3, training_set=['FCCOCC', 'CC(CC)CCCCNONNN', 'C=CC=O'])
     result = benchmark.assess_model(generator)
@@ -99,7 +100,7 @@ def test_KLdiv_benchmark_different_dist():
     assert result.score < 1.0
 
 
-def test_distribution_learning_suite_v1():
+def test_distribution_learning_suite_v1() -> None:
     generator = MockGenerator(
         ['CCl', 'CCOCCCl', 'ClCCF', 'CCCOCCOCCCO', 'CF', 'CCOCC', 'CCF', 'CCCOCC', 'NNNNONNN', 'C=CC=C'] * 10)
 

@@ -1,5 +1,4 @@
-from typing import List, Tuple, Dict
-
+from collections.abc import Sequence
 
 class ScoreContributionSpecification:
     """
@@ -9,7 +8,7 @@ class ScoreContributionSpecification:
     This class specifies which top-x to consider and what the corresponding weights are.
     """
 
-    def __init__(self, contributions: List[Tuple[int, float]]) -> None:
+    def __init__(self, contributions: Sequence[tuple[int, float]]) -> None:
         """
         Args:
             contributions: List of tuples (top_count, weight) for the score contributions
@@ -17,11 +16,11 @@ class ScoreContributionSpecification:
         self.contributions = contributions
 
     @property
-    def top_counts(self) -> List[int]:
+    def top_counts(self) -> list[int]:
         return [x[0] for x in self.contributions]
 
     @property
-    def weights(self) -> List[float]:
+    def weights(self) -> list[float]:
         return [x[1] for x in self.contributions]
 
 
@@ -37,13 +36,13 @@ def uniform_specification(*top_counts: int) -> ScoreContributionSpecification:
 
 
 def compute_global_score(contribution_specification: ScoreContributionSpecification,
-                         scores: List[float]) -> Tuple[float, Dict[str, float]]:
+                         scores: Sequence[float]) -> tuple[float, dict[str, float]]:
     """
     Computes the global score according to the contribution specification.
 
     Args:
         contribution_specification: Score contribution specification
-        scores: List of all scores - list must be long enough for all top_counts in contribution_specification
+        scores: list of all scores - list must be long enough for all top_counts in contribution_specification
 
     Returns:
         Tuple with the global score and a dict with the considered top-x scores

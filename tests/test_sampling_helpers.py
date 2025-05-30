@@ -2,7 +2,7 @@ from guacamol.utils.sampling_helpers import sample_valid_molecules, sample_uniqu
 from .mock_generator import MockGenerator
 
 
-def test_sample_valid_molecules_for_valid_only():
+def test_sample_valid_molecules_for_valid_only() -> None:
     generator = MockGenerator(['CCCC', 'CC'])
 
     mols = sample_valid_molecules(generator, 2)
@@ -10,7 +10,7 @@ def test_sample_valid_molecules_for_valid_only():
     assert mols == ['CCCC', 'CC']
 
 
-def test_sample_valid_molecules_with_invalid_molecules():
+def test_sample_valid_molecules_with_invalid_molecules() -> None:
     generator = MockGenerator(['invalid', 'invalid', 'invalid', 'CCCC', 'invalid', 'CC'])
 
     mols = sample_valid_molecules(generator, 2)
@@ -18,7 +18,7 @@ def test_sample_valid_molecules_with_invalid_molecules():
     assert mols == ['CCCC', 'CC']
 
 
-def test_sample_valid_molecules_if_not_enough_valid_generated():
+def test_sample_valid_molecules_if_not_enough_valid_generated() -> None:
     # does not raise an exception if
     molecules = ['invalid' for _ in range(20)]
     molecules[-1] = 'CC'
@@ -35,7 +35,7 @@ def test_sample_valid_molecules_if_not_enough_valid_generated():
     assert mols == ['CN', 'CC']
 
 
-def test_sample_unique_molecules_for_valid_only():
+def test_sample_unique_molecules_for_valid_only() -> None:
     generator = MockGenerator(['CCCC', 'CC'])
 
     mols = sample_unique_molecules(generator, 2)
@@ -43,7 +43,7 @@ def test_sample_unique_molecules_for_valid_only():
     assert mols == ['CCCC', 'CC']
 
 
-def test_sample_unique_molecules_with_invalid_molecules():
+def test_sample_unique_molecules_with_invalid_molecules() -> None:
     generator = MockGenerator(['invalid1', 'invalid2', 'inv3', 'CCCC', 'CC'])
 
     mols = sample_unique_molecules(generator, 2)
@@ -51,7 +51,7 @@ def test_sample_unique_molecules_with_invalid_molecules():
     assert mols == ['CCCC', 'CC']
 
 
-def test_sample_unique_molecules_with_duplicate_molecules():
+def test_sample_unique_molecules_with_duplicate_molecules() -> None:
     generator = MockGenerator(['CO', 'C(O)', 'CCCC', 'CC'])
 
     mols = sample_unique_molecules(generator, 2)
@@ -59,7 +59,7 @@ def test_sample_unique_molecules_with_duplicate_molecules():
     assert mols == ['CO', 'CCCC']
 
 
-def test_sample_unique_molecules_if_not_enough_unique_generated():
+def test_sample_unique_molecules_if_not_enough_unique_generated() -> None:
     # does not raise an exception if
     molecules = ['CO' for _ in range(20)]
     molecules[-1] = 'CC'

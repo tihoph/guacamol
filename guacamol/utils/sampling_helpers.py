@@ -1,10 +1,8 @@
-from typing import List, Set
-
 from guacamol.distribution_matching_generator import DistributionMatchingGenerator
 from guacamol.utils.chemistry import is_valid, canonicalize
 
 
-def sample_valid_molecules(model: DistributionMatchingGenerator, number_molecules: int, max_tries: int=10) -> List[str]:
+def sample_valid_molecules(model: DistributionMatchingGenerator, number_molecules: int, max_tries: int=10) -> list[str]:
     """
     Sample from the given generator until the desired number of valid molecules
     has been sampled (i.e., ignore invalid molecules).
@@ -21,7 +19,7 @@ def sample_valid_molecules(model: DistributionMatchingGenerator, number_molecule
     max_samples = max_tries * number_molecules
     number_already_sampled = 0
 
-    valid_molecules: List[str] = []
+    valid_molecules: list[str] = []
 
     while len(valid_molecules) < number_molecules and number_already_sampled < max_samples:
         remaining_to_sample = number_molecules - len(valid_molecules)
@@ -34,7 +32,7 @@ def sample_valid_molecules(model: DistributionMatchingGenerator, number_molecule
     return valid_molecules
 
 
-def sample_unique_molecules(model: DistributionMatchingGenerator, number_molecules: int, max_tries: int=10) -> List[str]:
+def sample_unique_molecules(model: DistributionMatchingGenerator, number_molecules: int, max_tries: int=10) -> list[str]:
     """
     Sample from the given generator until the desired number of unique (distinct) molecules
     has been sampled (i.e., ignore duplicate molecules).
@@ -53,8 +51,8 @@ def sample_unique_molecules(model: DistributionMatchingGenerator, number_molecul
     max_samples = max_tries * number_molecules
     number_already_sampled = 0
 
-    unique_list: List[str] = []
-    unique_set: Set[str] = set()
+    unique_list: list[str] = []
+    unique_set: set[str] = set()
 
     while len(unique_list) < number_molecules and number_already_sampled < max_samples:
         remaining_to_sample = number_molecules - len(unique_list)

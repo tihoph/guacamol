@@ -1,4 +1,4 @@
-from typing import List
+from collections.abc import Sequence
 
 from guacamol.distribution_matching_generator import DistributionMatchingGenerator
 
@@ -9,13 +9,13 @@ class MockGenerator(DistributionMatchingGenerator):
     possibly split in several calls
     """
 
-    def __init__(self, molecules: List[str]) -> None:
+    def __init__(self, molecules: Sequence[str]) -> None:
         self.molecules = molecules
         self.cursor = 0
 
-    def generate(self, number_samples: int) -> List[str]:
+    def generate(self, number_samples: int) -> list[str]:
         end = self.cursor + number_samples
 
         sampled_molecules = self.molecules[self.cursor:end]
         self.cursor = end
-        return sampled_molecules
+        return list(sampled_molecules)

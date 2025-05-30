@@ -12,14 +12,14 @@ value_array = np.array([[-3.3, 0, 5.5],
                         [0.011, 2.0, -33]])
 
 
-def test_linear_function_default():
+def test_linear_function_default() -> None:
     f = LinearModifier()
 
     assert f(scalar_value) == scalar_value
     assert np.array_equal(f(value_array), value_array)
 
 
-def test_linear_function_with_slope():
+def test_linear_function_with_slope() -> None:
     slope = 3.3
     f = LinearModifier(slope=slope)
 
@@ -27,7 +27,7 @@ def test_linear_function_with_slope():
     assert np.array_equal(f(value_array), slope * value_array)
 
 
-def test_squared_function():
+def test_squared_function() -> None:
     target_value = 5.555
     coefficient = 0.123
     f = SquaredModifier(target_value=target_value, coefficient=coefficient)
@@ -39,7 +39,7 @@ def test_squared_function():
     assert np.array_equal(f(value_array), expected_array)
 
 
-def test_absolute_function():
+def test_absolute_function() -> None:
     target_value = 5.555
     f = AbsoluteScoreModifier(target_value=target_value)
 
@@ -50,11 +50,11 @@ def test_absolute_function():
     assert np.array_equal(f(value_array), expected_array)
 
 
-def gaussian(x, mu, sig):
+def gaussian(x, mu: float, sig: float):
     return np.exp(-np.power(x - mu, 2.) / (2 * np.power(sig, 2.)))
 
 
-def test_gaussian_function():
+def test_gaussian_function() -> None:
     mu = -1.223
     sigma = 0.334
 
@@ -109,7 +109,7 @@ def test_max_gaussian_function():
     assert np.allclose(f(value_array), max_gaussian(value_array))
 
 
-def test_tanimoto_threshold_function():
+def test_tanimoto_threshold_function() -> None:
     threshold = 5.555
     f = ThresholdedLinearModifier(threshold=threshold)
 
@@ -122,7 +122,7 @@ def test_tanimoto_threshold_function():
     assert np.array_equal(f(value_array), expected_array)
 
 
-def test_clipped_function():
+def test_clipped_function() -> None:
     min_x = 4.4
     max_x = 8.8
     min_score = -3.3
@@ -146,7 +146,7 @@ def test_clipped_function():
         assert modifier(x) == pytest.approx(min_score + dy)
 
 
-def test_clipped_function_inverted():
+def test_clipped_function_inverted() -> None:
     # The clipped function also works for decreasing scores
     max_x = 4.4
     min_x = 8.8
@@ -171,7 +171,7 @@ def test_clipped_function_inverted():
         assert modifier(x) == pytest.approx(min_score + dy)
 
 
-def test_thresholded_is_special_case_of_clipped_for_positive_input():
+def test_thresholded_is_special_case_of_clipped_for_positive_input() -> None:
     threshold = 4.584
     thresholded_modifier = ThresholdedLinearModifier(threshold=threshold)
     clipped_modifier = ClippedScoreModifier(upper_x=threshold)
@@ -181,7 +181,7 @@ def test_thresholded_is_special_case_of_clipped_for_positive_input():
     assert np.allclose(thresholded_modifier(values), clipped_modifier(values))
 
 
-def test_smooth_clipped():
+def test_smooth_clipped() -> None:
     min_x = 4.4
     max_x = 8.8
     min_score = -3.3
@@ -207,7 +207,7 @@ def test_smooth_clipped():
     assert modifier(-1e5) == pytest.approx(min_score)
 
 
-def test_smooth_clipped_inverted():
+def test_smooth_clipped_inverted() -> None:
     # The smooth clipped function also works for decreasing scores
     max_x = 4.4
     min_x = 8.8
@@ -234,7 +234,7 @@ def test_smooth_clipped_inverted():
     assert modifier(-1e5) == pytest.approx(max_score)
 
 
-def test_chained_modifier():
+def test_chained_modifier() -> None:
     linear = LinearModifier(slope=2)
     squared = SquaredModifier(10.0)
 

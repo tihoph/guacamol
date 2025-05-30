@@ -1,9 +1,9 @@
 import logging
 import time
 from abc import abstractmethod
-from typing import Dict, Any, Iterable, List
+from typing import Any
 import numpy as np
-
+from collections.abc import Iterable, Sequence, Mapping
 from guacamol.utils.chemistry import canonicalize_list, is_valid, calculate_pc_descriptors, continuous_kldiv, \
     discrete_kldiv, calculate_internal_pairwise_similarities
 from guacamol.distribution_matching_generator import DistributionMatchingGenerator
@@ -21,7 +21,7 @@ class DistributionLearningBenchmarkResult:
     NB: timing does not make sense since training happens outside of DistributionLearningBenchmark.
     """
 
-    def __init__(self, benchmark_name: str, score: float, sampling_time: float, metadata: Dict[str, Any]) -> None:
+    def __init__(self, benchmark_name: str, score: float, sampling_time: float, metadata: Mapping[str, Any]) -> None:
         """
         Args:
             benchmark_name: name of the distribution-learning benchmark
@@ -163,7 +163,7 @@ class KLDivBenchmark(DistributionLearningBenchmark):
     Computes the KL divergence between a number of samples and the training set for physchem descriptors
     """
 
-    def __init__(self, number_samples: int, training_set: List[str]) -> None:
+    def __init__(self, number_samples: int, training_set: Sequence[str]) -> None:
         """
         Args:
             number_samples: number of samples to generate from the model

@@ -1,5 +1,6 @@
-from typing import Optional, List
+from __future__ import annotations
 
+from collections.abc import Sequence
 import pytest
 from rdkit import Chem
 
@@ -22,16 +23,16 @@ class MockGenerator(GoalDirectedGenerator):
     """
     Mock generator that returns pre-defined molecules
     """
-    def __init__(self, molecules: List[str]) -> None:
+    def __init__(self, molecules: Sequence[str]) -> None:
         self.molecules = molecules
 
     def generate_optimized_molecules(self, scoring_function: ScoringFunction, number_molecules: int,
-                                     starting_population: Optional[List[str]] = None) -> List[str]:
+                                     starting_population: Sequence[str] | None = None) -> list[str]:
         assert number_molecules == len(self.molecules)
-        return self.molecules
+        return list(self.molecules)
 
 
-def test_removes_duplicates():
+def test_removes_duplicates() -> None:
     """
     Assert that duplicated molecules (even with different SMILES strings) are considered only once.
     """
@@ -44,7 +45,7 @@ def test_removes_duplicates():
     assert benchmark.assess_model(generator).score == pytest.approx(individual_mock_score / 3)
 
 
-def test_removes_invalid_molecules():
+def test_removes_invalid_molecules() -> None:
     top3 = uniform_specification(3)
     benchmark = GoalDirectedBenchmark('benchmark', MockScoringFunction(), top3)
     generator = MockGenerator(['OCC', 'invalid', 'invalid2'])
@@ -54,7 +55,7 @@ def test_removes_invalid_molecules():
     assert benchmark.assess_model(generator).score == pytest.approx(individual_mock_score / 3)
 
 
-def test_correct_score_averaging():
+def test_correct_score_averaging() -> None:
     top3 = uniform_specification(3)
     benchmark = GoalDirectedBenchmark('benchmark', MockScoringFunction(), top3)
     generator = MockGenerator(['OCC', 'CCCCOCCCC', 'C'])
@@ -64,7 +65,7 @@ def test_correct_score_averaging():
     assert benchmark.assess_model(generator).score == pytest.approx(expected_score)
 
 
-def test_correct_score_with_multiple_contributions():
+def test_correct_score_with_multiple_contributions() -> None:
     """
     Verify that 0.5 * (top1 + top3) delivers the correct result
     """

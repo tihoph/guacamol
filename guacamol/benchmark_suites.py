@@ -1,5 +1,4 @@
-from typing import List
-
+from typing import Literal
 from guacamol.distribution_learning_benchmark import DistributionLearningBenchmark, ValidityBenchmark, \
     UniquenessBenchmark
 from guacamol.goal_directed_benchmark import GoalDirectedBenchmark
@@ -11,7 +10,7 @@ from guacamol.standard_benchmarks import hard_cobimetinib, similarity, logP_benc
     median_tadalafil_sildenafil, decoration_hop, scaffold_hop, ranolazine_mpo, pioglitazone_mpo
 
 
-def goal_directed_benchmark_suite(version_name: str) -> List[GoalDirectedBenchmark]:
+def goal_directed_benchmark_suite(version_name: Literal["v1", "v2", "trivial"]) -> list[GoalDirectedBenchmark]:
     if version_name == 'v1':
         return goal_directed_suite_v1()
     if version_name == 'v2':
@@ -23,8 +22,8 @@ def goal_directed_benchmark_suite(version_name: str) -> List[GoalDirectedBenchma
 
 
 def distribution_learning_benchmark_suite(chembl_file_path: str,
-                                          version_name: str,
-                                          number_samples: int) -> List[DistributionLearningBenchmark]:
+                                          version_name: Literal["v1", "v2"],
+                                          number_samples: int) -> list[DistributionLearningBenchmark]:
     """
     Returns a suite of benchmarks for a specified benchmark version
 
@@ -33,7 +32,7 @@ def distribution_learning_benchmark_suite(chembl_file_path: str,
         version_name: benchmark version
 
     Returns:
-        List of benchmaks
+        list of benchmaks
     """
 
     # For distribution-learning, v1 and v2 are identical
@@ -43,7 +42,7 @@ def distribution_learning_benchmark_suite(chembl_file_path: str,
     raise Exception(f'Distribution-learning benchmark suite "{version_name}" does not exist.')
 
 
-def goal_directed_suite_v1() -> List[GoalDirectedBenchmark]:
+def goal_directed_suite_v1() -> list[GoalDirectedBenchmark]:
     max_logP = 6.35584
     return [
         isomers_c11h24(mean_function='arithmetic'),
@@ -87,7 +86,7 @@ def goal_directed_suite_v1() -> List[GoalDirectedBenchmark]:
     ]
 
 
-def goal_directed_suite_v2() -> List[GoalDirectedBenchmark]:
+def goal_directed_suite_v2() -> list[GoalDirectedBenchmark]:
     return [
         # explicit rediscovery
         similarity(smiles='CC1=CC=C(C=C1)C1=CC(=NN1C1=CC=C(C=C1)S(N)(=O)=O)C(F)(F)F', name='Celecoxib', fp_type='ECFP4',
@@ -126,7 +125,7 @@ def goal_directed_suite_v2() -> List[GoalDirectedBenchmark]:
     ]
 
 
-def goal_directed_suite_trivial() -> List[GoalDirectedBenchmark]:
+def goal_directed_suite_trivial() -> list[GoalDirectedBenchmark]:
     """
     Trivial goal-directed benchmarks from the paper.
     """
@@ -141,8 +140,7 @@ def goal_directed_suite_trivial() -> List[GoalDirectedBenchmark]:
     ]
 
 
-def distribution_learning_suite_v1(chembl_file_path: str, number_samples: int = 10000) -> \
-        List[DistributionLearningBenchmark]:
+def distribution_learning_suite_v1(chembl_file_path: str, number_samples: int = 10000) ->  list[DistributionLearningBenchmark]:
     """
     Suite of distribution learning benchmarks, v1.
 
@@ -150,7 +148,7 @@ def distribution_learning_suite_v1(chembl_file_path: str, number_samples: int = 
         chembl_file_path: path to the file with the reference ChEMBL molecules
 
     Returns:
-        List of benchmarks, version 1
+        list of benchmarks, version 1
     """
     return [
         ValidityBenchmark(number_samples=number_samples),

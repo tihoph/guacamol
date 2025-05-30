@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from argparse import ArgumentParser
 import argparse
 import gzip
@@ -8,13 +10,15 @@ import os.path
 import pkgutil
 import platform
 from joblib import Parallel, delayed
-from typing import List, Iterable, Optional, Set
-
+from collections.abc import Iterable
+from collections.abc import Collection
 from guacamol.utils.chemistry import canonicalize_list, filter_and_canonicalize, \
     initialise_neutralisation_reactions, split_charged_mol, get_fingerprints_from_smileslist
 from guacamol.utils.data import download_if_not_present
 from guacamol.utils.helpers import setup_default_logger
 
+from typing import TextIO, ContextManager
+from collections.abc import Mapping, Callable
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.NullHandler())
 
@@ -37,7 +41,7 @@ def get_argparser() -> ArgumentParser:
     return parser
 
 
-def extract_chembl(line) -> str:
+def extract_chembl(line: str) -> str:
     """
     Extract smiles from chembl tsv
 
@@ -47,7 +51,7 @@ def extract_chembl(line) -> str:
     return line.split('\t')[1]
 
 
-def extract_smilesfile(line) -> str:
+def extract_smilesfile(line: str) -> str:
     """
     Extract smiles from SMILES file
 
@@ -57,17 +61,17 @@ def extract_smilesfile(line) -> str:
     return line.split(' ')[0].strip()
 
 
-class AllowedSmilesCharDictionary(object):
+class AllowedSmilesCharDictionary:
     """
     A fixed dictionary for druglike SMILES.
     """
 
-    def __init__(self, forbidden_symbols: Optional[Set[str]] = None) -> None:
+    def __init__(self, forbidden_symbols: Collection[str] | None = None) -> None:
         if forbidden_symbols is None:
             forbidden_symbols = {'Ag', 'Al', 'Am', 'Ar', 'At', 'Au', 'D', 'E', 'Fe', 'G', 'K', 'L', 'M', 'Ra', 'Re',
                                  'Rf', 'Rg', 'Rh', 'Ru', 'T', 'U', 'V', 'W', 'Xe',
                                  'Y', 'Zr', 'a', 'd', 'f', 'g', 'h', 'k', 'm', 'si', 't', 'te', 'u', 'v', 'y'}
-        self.forbidden_symbols = forbidden_symbols
+        self.forbidden_symbols = set(forbidden_symbols)
 
     def allowed(self, smiles: str) -> bool:
         """
@@ -86,7 +90,7 @@ class AllowedSmilesCharDictionary(object):
         return True
 
 
-def get_raw_smiles(file_name, smiles_char_dict, open_fn, extract_fn) -> List[str]:
+def get_raw_smiles(file_name: str, smiles_char_dict: AllowedSmilesCharDictionary, open_fn: Callable[..., ContextManager[TextIO]], extract_fn: Callable[[str], str]) -> list[str]:
     """
     Extracts the raw smiles from an input file.
     open_fn will open the file to iterate over it (e.g. use open_fn=open or open_fn=filegzip.open)
@@ -105,7 +109,7 @@ def get_raw_smiles(file_name, smiles_char_dict, open_fn, extract_fn) -> List[str
 
             line_count += 1
             # extract the canonical smiles column
-            if platform.system() == "Windows":
+            if isinstance(line, bytes):
                 line = line.decode("utf-8")
 
             # smiles = line.split('\t')[1]

@@ -2,22 +2,22 @@ from guacamol.utils.chemistry import canonicalize, canonicalize_list, is_valid, 
     calculate_internal_pairwise_similarities, calculate_pairwise_similarities, parse_molecular_formula
 
 
-def test_validity_empty_molecule():
+def test_validity_empty_molecule() -> None:
     smiles = ''
     assert not is_valid(smiles)
 
 
-def test_validity_incorrect_syntax():
+def test_validity_incorrect_syntax() -> None:
     smiles = 'CCCincorrectsyntaxCCC'
     assert not is_valid(smiles)
 
 
-def test_validity_incorrect_valence():
+def test_validity_incorrect_valence() -> None:
     smiles = 'CCC(CC)(CC)(=O)CCC'
     assert not is_valid(smiles)
 
 
-def test_validity_correct_molecules():
+def test_validity_correct_molecules() -> None:
     smiles_1 = 'O'
     smiles_2 = 'C'
     smiles_3 = 'CC(ONONOC)CCCc1ccccc1'
@@ -27,7 +27,7 @@ def test_validity_correct_molecules():
     assert is_valid(smiles_3)
 
 
-def test_isomeric_canonicalisation():
+def test_isomeric_canonicalisation() -> None:
     endiandric_acid = r'OC(=O)[C@H]5C2\C=C/C3[C@@H]5CC4[C@H](C\C=C\C=C\c1ccccc1)[C@@H]2[C@@H]34'
 
     with_stereocenters = canonicalize(endiandric_acid, include_stereocenters=True)
@@ -40,7 +40,7 @@ def test_isomeric_canonicalisation():
     assert without_stereocenters == expected_without_stereocenters
 
 
-def test_list_canonicalization_removes_none():
+def test_list_canonicalization_removes_none() -> None:
     m1 = 'CCC(OCOCO)CC(=O)NCC'
     m2 = 'this.is.not.a.molecule'
     m3 = 'c1ccccc1'
@@ -55,7 +55,7 @@ def test_list_canonicalization_removes_none():
     assert canonicalized_molecules == expected
 
 
-def test_internal_sim():
+def test_internal_sim() -> None:
     molz = ['OCCCF', 'c1cc(F)ccc1', 'c1cnc(CO)cc1', 'FOOF']
     sim = calculate_internal_pairwise_similarities(molz)
 
@@ -71,7 +71,7 @@ def test_internal_sim():
                 assert sim[i, j] == 0
 
 
-def test_external_sim():
+def test_external_sim() -> None:
     molz1 = ['OCCCF', 'c1cc(F)ccc1', 'c1cnc(CO)cc1', 'FOOF']
     molz2 = ['c1cc(Cl)ccc1', '[Cr][Ac][K]', '[Ca](F)[Fe]']
     sim = calculate_pairwise_similarities(molz1, molz2)
@@ -84,7 +84,7 @@ def test_external_sim():
             assert sim[i, j] < 1.0
 
 
-def test_parse_molecular_formula():
+def test_parse_molecular_formula() -> None:
     formula = 'C6H9NOF2Cl2Br'
     parsed = parse_molecular_formula(formula)
 

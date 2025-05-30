@@ -1,14 +1,16 @@
+from __future__ import annotations
+
 import os
 import sys
 import time
-from typing import List, Any, Optional, Set
+from typing import Any
 from urllib.request import urlretrieve
 
 import numpy as np
 from tqdm import tqdm
+from collections.abc import Sequence
 
-
-def remove_duplicates(list_with_duplicates):
+def remove_duplicates(list_with_duplicates: Sequence[str]) -> list[str]:
     """
     Removes the duplicates and keeps the ordering of the original list.
     For duplicates, the first occurrence is kept and the later occurrences are ignored.
@@ -20,7 +22,7 @@ def remove_duplicates(list_with_duplicates):
         A list with no duplicates.
     """
 
-    unique_set: Set[Any] = set()
+    unique_set: set[str] = set()
     unique_list = []
     for element in list_with_duplicates:
         if element not in unique_set:
@@ -30,7 +32,7 @@ def remove_duplicates(list_with_duplicates):
     return unique_list
 
 
-def get_random_subset(dataset: List[Any], subset_size: int, seed: Optional[int] = None) -> List[Any]:
+def get_random_subset(dataset: Sequence[str], subset_size: int, seed: int | None = None) -> list[str]:
     """
     Get a random subset of some dataset.
 
@@ -91,7 +93,7 @@ class ProgressBar(tqdm):
         if not sys.stdout.isatty():
             kwargs['mininterval'] = 30.0
             kwargs['maxinterval'] = 30.0
-        super(ProgressBar, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
 
 class ProgressBarUpTo(ProgressBar):

@@ -1,17 +1,19 @@
 from __future__ import annotations
 
-from typing import Callable, List
+from collections.abc import Callable
 
 from rdkit import Chem
+from typing import Literal
 from rdkit.DataStructs.cDataStructs import TanimotoSimilarity
 
 from guacamol.utils.descriptors import mol_weight, logP, num_H_donors, tpsa, num_atoms, AtomCounter
-from guacamol.utils.fingerprints import get_fingerprint
+from guacamol.utils.fingerprints import get_fingerprint, FpNameT
 from guacamol.score_modifier import ScoreModifier, MinGaussianModifier, MaxGaussianModifier, GaussianModifier
 from guacamol.scoring_function import ScoringFunctionBasedOnRdkitMol, MoleculewiseScoringFunction
 from guacamol.utils.chemistry import smiles_to_rdkit_mol, parse_molecular_formula
 from guacamol.utils.math import arithmetic_mean, geometric_mean
 
+MeanFuncT = Literal["geometric", "arithmetic"]
 
 class RdkitScoringFunction(ScoringFunctionBasedOnRdkitMol):
     """
@@ -36,7 +38,7 @@ class TanimotoScoringFunction(ScoringFunctionBasedOnRdkitMol):
     Scoring function that looks at the fingerprint similarity against a target molecule.
     """
 
-    def __init__(self, target: str, fp_type: str, score_modifier: ScoreModifier  | None= None) -> None:
+    def __init__(self, target: str, fp_type: FpNameT, score_modifier: ScoreModifier  | None= None) -> None:
         """
         Args:
             target: target molecule
@@ -100,7 +102,7 @@ class IsomerScoringFunction(MoleculewiseScoringFunction):
     - total number of atoms with a Gaussian modifier with mu=6, sigma=2
     """
 
-    def __init__(self, molecular_formula: str, mean_function: str='geometric') -> None:
+    def __init__(self, molecular_formula: str, mean_function: MeanFuncT='geometric') -> None:
         """
         Args:
             molecular_formula: target molecular formula
@@ -112,7 +114,7 @@ class IsomerScoringFunction(MoleculewiseScoringFunction):
         self.scoring_functions = self.determine_scoring_functions(molecular_formula)
 
     @staticmethod
-    def determine_mean_function(mean_function: str) -> Callable[[List[float]], float]:
+    def determine_mean_function(mean_function: str) -> Callable[[list[float]], float]:
         if mean_function == 'arithmetic':
             return arithmetic_mean
         if mean_function == 'geometric':
@@ -120,7 +122,7 @@ class IsomerScoringFunction(MoleculewiseScoringFunction):
         raise ValueError(f'Invalid mean function: "{mean_function}"')
 
     @staticmethod
-    def determine_scoring_functions(molecular_formula: str) -> List[RdkitScoringFunction]:
+    def determine_scoring_functions(molecular_formula: str) -> list[RdkitScoringFunction]:
         element_occurrences = parse_molecular_formula(molecular_formula)
 
         total_number_atoms = sum(element_tuple[1] for element_tuple in element_occurrences)

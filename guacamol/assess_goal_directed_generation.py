@@ -1,8 +1,8 @@
 import datetime
 import json
 import logging
-from collections import OrderedDict
-from typing import List, Any, Dict
+from collections.abc import Sequence
+from typing import  Any, Literal
 
 import guacamol
 from guacamol.goal_directed_benchmark import GoalDirectedBenchmark, GoalDirectedBenchmarkResult
@@ -16,7 +16,7 @@ logger.addHandler(logging.NullHandler())
 
 def assess_goal_directed_generation(goal_directed_molecule_generator: GoalDirectedGenerator,
                                     json_output_file: str='output_goal_directed.json',
-                                    benchmark_version: str='v1') -> None:
+                                    benchmark_version: Literal["v1", "v2"]='v1') -> None:
     """
     Assesses a distribution-matching model for de novo molecule design.
 
@@ -32,7 +32,7 @@ def assess_goal_directed_generation(goal_directed_molecule_generator: GoalDirect
         goal_directed_molecule_generator=goal_directed_molecule_generator,
         benchmarks=benchmarks)
 
-    benchmark_results: Dict[str, Any] = OrderedDict()
+    benchmark_results: dict[str, Any] = {}
     benchmark_results['guacamol_version'] = guacamol.__version__
     benchmark_results['benchmark_suite_version'] = benchmark_version
     benchmark_results['timestamp'] = get_time_string()
@@ -44,8 +44,8 @@ def assess_goal_directed_generation(goal_directed_molecule_generator: GoalDirect
 
 
 def _evaluate_goal_directed_benchmarks(goal_directed_molecule_generator: GoalDirectedGenerator,
-                                       benchmarks: List[GoalDirectedBenchmark]
-                                       ) -> List[GoalDirectedBenchmarkResult]:
+                                       benchmarks: Sequence[GoalDirectedBenchmark]
+                                       ) -> list[GoalDirectedBenchmarkResult]:
     """
     Evaluate a model with the given benchmarks.
     Should not be called directly except for testing purposes.
@@ -58,7 +58,7 @@ def _evaluate_goal_directed_benchmarks(goal_directed_molecule_generator: GoalDir
 
     logger.info(f'Number of benchmarks: {len(benchmarks)}')
 
-    results = []
+    results:list[GoalDirectedBenchmarkResult] = []
     for i, benchmark in enumerate(benchmarks, 1):
         logger.info(f'Running benchmark {i}/{len(benchmarks)}: {benchmark.name}')
         result = benchmark.assess_model(goal_directed_molecule_generator)

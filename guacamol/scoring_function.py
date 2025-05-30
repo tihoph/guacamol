@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from abc import abstractmethod
 import logging
-from typing import List, Optional
 
 import numpy as np
 from rdkit import Chem
-
+from collections.abc import Sequence
 from guacamol.utils.chemistry import smiles_to_rdkit_mol
 from guacamol.score_modifier import ScoreModifier, LinearModifier
 from guacamol.utils.math import geometric_mean
@@ -31,15 +30,15 @@ class ScoringFunction:
         Args:
             score_modifier: Modifier to apply to the score. If None, will be LinearModifier()
         """
-        self.score_modifier = score_modifier
+        self.score_modifier = score_modifier # type: ignore[assignment]
         self.corrupt_score = -1.0
 
     @property
-    def score_modifier(self):
+    def score_modifier(self) -> ScoreModifier:
         return self._score_modifier
 
     @score_modifier.setter
-    def score_modifier(self, modifier: Optional[ScoreModifier]):
+    def score_modifier(self, modifier: ScoreModifier | None) -> None:
         self._score_modifier = LinearModifier() if modifier is None else modifier
 
     def modify_score(self, raw_score: float) -> float:
@@ -53,7 +52,7 @@ class ScoringFunction:
         raise NotImplementedError
 
     @abstractmethod
-    def score_list(self, smiles_list: List[str]) -> List[float]:
+    def score_list(self, smiles_list: Sequence[str]) -> list[float]:
         """
         Score a list of smiles.
 
@@ -93,7 +92,7 @@ class MoleculewiseScoringFunction(ScoringFunction):
             logger.warning(f'Unknown exception thrown during scoring of {smiles}')
             return self.corrupt_score
 
-    def score_list(self, smiles_list: List[str]) -> List[float]:
+    def score_list(self, smiles_list: Sequence[str]) -> list[float]:
         return [self.score(smiles) for smiles in smiles_list]
 
     @abstractmethod
@@ -126,7 +125,7 @@ class BatchScoringFunction(ScoringFunction):
     def score(self, smiles: str) -> float:
         return self.score_list([smiles])[0]
 
-    def score_list(self, smiles_list: List[str]) -> List[float]:
+    def score_list(self, smiles_list: Sequence[str]) -> list[float]:
         raw_scores = self.raw_score_list(smiles_list)
 
         scores = [self.corrupt_score if raw_score is None
@@ -136,7 +135,7 @@ class BatchScoringFunction(ScoringFunction):
         return scores
 
     @abstractmethod
-    def raw_score_list(self, smiles_list: List[str]) -> List[float]:
+    def raw_score_list(self, smiles_list: Sequence[str]) -> list[float]:
         """
         Calculate the objective score before application of the modifier for a batch of molecules.
 
@@ -181,7 +180,7 @@ class ArithmeticMeanScoringFunction(BatchScoringFunction):
     Scoring function that combines multiple scoring functions linearly.
     """
 
-    def __init__(self, scoring_functions: List[ScoringFunction], weights: list[float] | None=None) -> None:
+    def __init__(self, scoring_functions: Sequence[ScoringFunction], weights: Sequence[float] | None=None) -> None:
         """
         Args:
             scoring_functions: scoring functions to combine
@@ -195,7 +194,7 @@ class ArithmeticMeanScoringFunction(BatchScoringFunction):
         self.weights = np.ones(number_scoring_functions) if weights is None else weights
         assert number_scoring_functions == len(self.weights)
 
-    def raw_score_list(self, smiles_list: List[str]) -> List[float]:
+    def raw_score_list(self, smiles_list: Sequence[str]) -> list[float]:
         scores = []
 
         for function, weight in zip(self.scoring_functions, self.weights):
@@ -212,7 +211,7 @@ class GeometricMeanScoringFunction(MoleculewiseScoringFunction):
     Scoring function that combines multiple scoring functions multiplicatively.
     """
 
-    def __init__(self, scoring_functions: List[ScoringFunction]) -> None:
+    def __init__(self, scoring_functions: Sequence[ScoringFunction]) -> None:
         """
         Args:
             scoring_functions: scoring functions to combine
@@ -243,7 +242,7 @@ class ScoringFunctionWrapper(ScoringFunction):
         self._increment_evaluation_count(1)
         return self.scoring_function.score(smiles)
 
-    def score_list(self, smiles_list: list[str]) -> list[float]:
+    def score_list(self, smiles_list: Sequence[str]) -> list[float]:
         self._increment_evaluation_count(len(smiles_list))
         return self.scoring_function.score_list(smiles_list)
 

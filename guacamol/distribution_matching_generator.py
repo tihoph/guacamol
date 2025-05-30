@@ -1,5 +1,4 @@
 from abc import ABCMeta, abstractmethod
-from typing import List
 
 
 class DistributionMatchingGenerator(metaclass=ABCMeta):
@@ -8,7 +7,7 @@ class DistributionMatchingGenerator(metaclass=ABCMeta):
     """
 
     @abstractmethod
-    def generate(self, number_samples: int) -> List[str]:
+    def generate(self, number_samples: int) -> list[str]:
         """
         Samples SMILES strings from a molecule generator.
 

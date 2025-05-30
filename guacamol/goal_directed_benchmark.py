@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import logging
 import time
-from typing import Any, Dict, List, Tuple, Optional
-
+from typing import Any
+from collections.abc import Mapping, Sequence
 import numpy as np
 
 from guacamol.goal_directed_score_contributions import ScoreContributionSpecification, compute_global_score
@@ -18,8 +20,8 @@ class GoalDirectedBenchmarkResult:
     Contains the results of a goal-directed benchmark.
     """
 
-    def __init__(self, benchmark_name: str, score: float, optimized_molecules: List[Tuple[str, float]],
-                 execution_time: float, number_scoring_function_calls: int, metadata: Dict[str, Any]) -> None:
+    def __init__(self, benchmark_name: str, score: float, optimized_molecules: Sequence[tuple[str, float]],
+                 execution_time: float, number_scoring_function_calls: int, metadata: Mapping[str, Any]) -> None:
         """
         Args:
             benchmark_name: name of the goal-directed benchmark
@@ -44,7 +46,7 @@ class GoalDirectedBenchmark:
 
     def __init__(self, name: str, objective: ScoringFunction,
                  contribution_specification: ScoreContributionSpecification,
-                 starting_population: Optional[List[str]] = None) -> None:
+                 starting_population: Sequence[str] | None = None) -> None:
         """
         Args:
             name: Benchmark name
@@ -94,7 +96,7 @@ class GoalDirectedBenchmark:
         # accumulate internal_similarities in metadata
         int_simi_histogram = np.histogram(internal_similarities, bins=10, range=(0, 1), density=True)
 
-        metadata: Dict[str, Any] = {}
+        metadata: dict[str, Any] = {}
         metadata.update(top_x_dict)
         metadata['internal_similarity_max'] = internal_similarities.max()
         metadata['internal_similarity_mean'] = internal_similarities.mean()

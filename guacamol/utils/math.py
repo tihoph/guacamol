@@ -1,16 +1,16 @@
-from typing import List
+from collections.abc import Sequence
 
 import numpy as np
 
 
-def arithmetic_mean(values: List[float]) -> float:
+def arithmetic_mean(values: Sequence[float]) -> float:
     """
     Computes the arithmetic mean of a list of values.
     """
     return sum(values) / len(values)
 
 
-def geometric_mean(values: List[float]) -> float:
+def geometric_mean(values: Sequence[float]) -> float:
     """
     Computes the geometric mean of a list of values.
     """

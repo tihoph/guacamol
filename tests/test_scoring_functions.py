@@ -1,6 +1,5 @@
 from math import sqrt
-from typing import List
-
+from collections.abc import Sequence
 import pytest
 
 from guacamol.common_scoring_functions import IsomerScoringFunction, SMARTSScoringFunction
@@ -14,24 +13,24 @@ class MockScoringFunction(BatchScoringFunction):
     Mock scoring function that returns values from an array given in the constructor.
     """
 
-    def __init__(self, values: List[float]) -> None:
+    def __init__(self, values: Sequence[float]) -> None:
         super().__init__()
         self.values = values
         self.index = 0
 
-    def raw_score_list(self, smiles_list: List[str]) -> List[float]:
+    def raw_score_list(self, smiles_list: Sequence[str]) -> list[float]:
         start = self.index
         self.index += len(smiles_list)
         end = self.index
-        return self.values[start:end]
+        return list(self.values[start:end])
 
 
-def test_isomer_scoring_function_uses_geometric_mean_by_default():
+def test_isomer_scoring_function_uses_geometric_mean_by_default() -> None:
     scoring_function = IsomerScoringFunction('C2H4')
     assert scoring_function.mean_function == geometric_mean
 
 
-def test_isomer_scoring_function_returns_one_for_correct_molecule():
+def test_isomer_scoring_function_returns_one_for_correct_molecule() -> None:
     c11h24_arithmetic = IsomerScoringFunction('C11H24', mean_function='arithmetic')
     c11h24_geometric = IsomerScoringFunction('C11H24', mean_function='geometric')
 
@@ -48,7 +47,7 @@ def test_isomer_scoring_function_returns_one_for_correct_molecule():
     assert c11h24_geometric.score(smiles3) == 1.0
 
 
-def test_isomer_scoring_function_penalizes_additional_atoms():
+def test_isomer_scoring_function_penalizes_additional_atoms() -> None:
     c11h24_arithmetic = IsomerScoringFunction('C11H24', mean_function='arithmetic')
     c11h24_geometric = IsomerScoringFunction('C11H24', mean_function='geometric')
 
@@ -72,7 +71,7 @@ def test_isomer_scoring_function_penalizes_additional_atoms():
     assert c11h24_geometric.score(smiles3) == pytest.approx(expected_score_geometric)
 
 
-def test_isomer_scoring_function_penalizes_incorrect_number_atoms():
+def test_isomer_scoring_function_penalizes_incorrect_number_atoms() -> None:
     c11h24_arithmetic = IsomerScoringFunction('C12H24', mean_function='arithmetic')
     c11h24_geometric = IsomerScoringFunction('C12H24', mean_function='geometric')
 
@@ -96,13 +95,13 @@ def test_isomer_scoring_function_penalizes_incorrect_number_atoms():
     assert c11h24_geometric.score(smiles3) == pytest.approx(expected_score_geometric)
 
 
-def test_isomer_scoring_function_invalid_molecule():
+def test_isomer_scoring_function_invalid_molecule() -> None:
     sf = IsomerScoringFunction('C60')
 
     assert sf.score('CCCinvalid') == sf.corrupt_score
 
 
-def test_smarts_function():
+def test_smarts_function() -> None:
     mol1 = 'COc1cc(N(C)CCN(C)C)c(NC(=O)C=C)cc1Nc2nccc(n2)c3cn(C)c4ccccc34'
     mol2 = 'Cc1c(C)c2OC(C)(COc3ccc(CC4SC(=O)NC4=O)cc3)CCc2c(C)c1O'
     smarts = '[#7;h1]c1ncccn1'
@@ -119,7 +118,7 @@ def test_smarts_function():
     assert scofu1.score_list([mol2])[0] == 0.0
 
 
-def test_arithmetic_mean_scoring_function():
+def test_arithmetic_mean_scoring_function() -> None:
     # define a scoring function returning the mean from two mock functions
     # and assert that it returns the correct values.
 
@@ -143,7 +142,7 @@ def test_arithmetic_mean_scoring_function():
     assert scores == expected
 
 
-def test_geometric_mean_scoring_function():
+def test_geometric_mean_scoring_function() -> None:
     # define a scoring function returning the geometric mean from two mock functions
     # and assert that it returns the correct values.
 

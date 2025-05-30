@@ -1,7 +1,8 @@
 from rdkit import Chem
+from typing import Literal
 
 from guacamol.common_scoring_functions import TanimotoScoringFunction, RdkitScoringFunction, CNS_MPO_ScoringFunction, \
-    IsomerScoringFunction, SMARTSScoringFunction
+    IsomerScoringFunction, SMARTSScoringFunction,  MeanFuncT
 from guacamol.distribution_learning_benchmark import DistributionLearningBenchmark, NoveltyBenchmark, KLDivBenchmark
 from guacamol.frechet_benchmark import FrechetBenchmark
 from guacamol.goal_directed_benchmark import GoalDirectedBenchmark
@@ -10,9 +11,10 @@ from guacamol.score_modifier import MinGaussianModifier, MaxGaussianModifier, Cl
 from guacamol.scoring_function import ArithmeticMeanScoringFunction, GeometricMeanScoringFunction, ScoringFunction
 from guacamol.utils.descriptors import num_rotatable_bonds, num_aromatic_rings, logP, qed, tpsa, bertz, mol_weight, \
     AtomCounter, num_rings
+from guacamol.utils.fingerprints import FpNameT
 
 
-def isomers_c11h24(mean_function: str='geometric') -> GoalDirectedBenchmark:
+def isomers_c11h24(mean_function: MeanFuncT='geometric') -> GoalDirectedBenchmark:
     """
     Benchmark to try and get all C11H24 molecules there are.
     There should be 159 if one ignores stereochemistry.
@@ -28,7 +30,7 @@ def isomers_c11h24(mean_function: str='geometric') -> GoalDirectedBenchmark:
                                  contribution_specification=specification)
 
 
-def isomers_c7h8n2o2(mean_function: str='geometric') -> GoalDirectedBenchmark:
+def isomers_c7h8n2o2(mean_function: MeanFuncT='geometric') -> GoalDirectedBenchmark:
     """
     Benchmark to try and get 100 isomers for C7H8N2O2.
 
@@ -43,7 +45,7 @@ def isomers_c7h8n2o2(mean_function: str='geometric') -> GoalDirectedBenchmark:
                                  contribution_specification=specification)
 
 
-def isomers_c9h10n2o2pf2cl(mean_function: str='geometric', n_samples: int=250) -> GoalDirectedBenchmark:
+def isomers_c9h10n2o2pf2cl(mean_function: MeanFuncT='geometric', n_samples: int=250) -> GoalDirectedBenchmark:
     """
     Benchmark to try and get 100 isomers for C9H10N2O2PF2Cl.
 
@@ -196,7 +198,7 @@ def similarity_cns_mpo(smiles, molecule_name: object, max_logP: float=5.0) -> Go
                                  contribution_specification=specification)
 
 
-def similarity(smiles: str, name: str, fp_type: str = 'ECFP4', threshold: float = 0.7,
+def similarity(smiles: str, name: str, fp_type: FpNameT = 'ECFP4', threshold: float = 0.7,
                rediscovery: bool = False) -> GoalDirectedBenchmark:
     category = 'rediscovery' if rediscovery else 'similarity'
     benchmark_name = f'{name} {category}'
