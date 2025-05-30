@@ -5,6 +5,7 @@ from typing import Any, TypeVar
 
 import numpy as np
 from numpy.typing import NDArray
+from scipy.special import expit
 
 S = TypeVar("S", float, NDArray[np.floating[Any]])
 
@@ -203,7 +204,8 @@ class SmoothClippedScoreModifier(ScoreModifier):
         self.L = high_score - low_score
 
     def __call__(self, x: S) -> S:
-        return self.low_score + self.L / (1 + np.exp(-self.k * (x - self.middle_x)))
+        sigmoid = expit(self.k * (x - self.middle_x))
+        return self.low_score + self.L * sigmoid
 
 
 class ThresholdedLinearModifier(ScoreModifier):
