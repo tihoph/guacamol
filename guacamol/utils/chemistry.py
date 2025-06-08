@@ -12,6 +12,7 @@ from rdkit.ML.Descriptors import MoleculeDescriptors
 from scipy.stats import entropy, gaussian_kde
 
 from guacamol.utils.data import remove_duplicates
+from guacamol.utils.parallelize import parallelize
 
 if TYPE_CHECKING:
     from collections.abc import Collection, Generator, Iterable, Sequence
@@ -74,8 +75,12 @@ def canonicalize_list(smiles_list: Iterable[str], include_stereocenters: bool = 
     Returns:
         The canonicalized and filtered input smiles.
     """
-
-    canonicalized_smiles = [canonicalize(smiles, include_stereocenters) for smiles in smiles_list]
+    canonicalized_smiles = parallelize(
+        canonicalize,
+        [(smiles, include_stereocenters) for smiles in smiles_list],
+        desc="Canonicalizing",
+        verbose=1,
+    )
 
     # Remove None elements
     valid_canonicalized_smiles = [s for s in canonicalized_smiles if s is not None]
@@ -373,14 +378,15 @@ def calculate_pc_descriptors(
     smiles: Iterable[str],
     pc_descriptors: Sequence[str],
 ) -> NDArray[np.float64]:
-    output: list[NDArray[np.float64]] = []
+    calculated_descriptors = parallelize(
+        _calculate_pc_descriptors,
+        [(smile, pc_descriptors) for smile in smiles],
+        desc="Calculating PC descriptors",
+        verbose=1,
+    )
+    calculated_descriptors = [x for x in calculated_descriptors if x is not None]
 
-    for i in smiles:
-        d = _calculate_pc_descriptors(i, pc_descriptors)
-        if d is not None:
-            output.append(d)
-
-    return np.array(output)
+    return np.array(calculated_descriptors)
 
 
 def _calculate_pc_descriptors(
